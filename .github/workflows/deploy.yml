@@ -20,14 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Assemble site
         run: |
           mkdir -p _site
           cp index.html prototype.html CNAME _site/
           cp -R assets _site/
-          touch _site/.nojekyll
 
       - name: Check local asset references
         run: |
@@ -52,10 +51,10 @@ jobs:
           exit $missing
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
@@ -68,4 +67,4 @@ jobs:
     steps:
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
