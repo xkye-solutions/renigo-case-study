@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; let an in-progress deploy finish
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp index.html prototype.html CNAME _site/
+          cp -R assets _site/
+          touch _site/.nojekyll
+
+      - name: Check local asset references
+        run: |
+          # Fail the build if a page points at a file that isn't in the site
+          missing=0
+          for page in _site/index.html _site/prototype.html; do
+            for ref in $(grep -oE '(src|href)="[^"#:]+"|url\("[^"]+"\)|assets/[A-Za-z0-9_./-]+\.(png|jpg|svg|ico)' "$page" \
+                         | sed -E 's/^(src|href)="//; s/^url\("//; s/"\)?$//' | grep -E '^(assets/|[a-z-]+\.html$)' | grep -v '\$' | sort -u); do
+              if [ ! -e "_site/$ref" ]; then
+                echo "::error file=${page#_site/}::Missing $ref"
+                missing=1
+              fi
+            done
+          done
+          # The prototype builds image paths in JS from bare filenames under assets/images/
+          for f in $(grep -oE "'renigo-[a-z0-9-]+\.(jpg|png)'" _site/prototype.html | tr -d "'" | sort -u); do
+            if [ ! -e "_site/assets/images/$f" ]; then
+              echo "::error file=prototype.html::Missing assets/images/$f"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -7,51 +7,69 @@
 <meta name="description" content="Renigo — a resident app for gated villages. A case study by Xkye Solutions with a live interactive prototype." />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/brand/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png" />
+<meta property="og:title" content="Renigo Case Study · Xkye Solutions" />
+<meta property="og:description" content="A resident app for gated communities, with a live interactive prototype." />
+<meta property="og:image" content="https://renigo.xkye.app/assets/brand/social-card-1200x630.png" />
+<meta property="og:url" content="https://renigo.xkye.app/" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="https://renigo.xkye.app/" />
 <style>
   :root {
-    --g900: #1f4d33;
-    --g700: #2e6b47;
-    --g600: #3a7d55;
-    --g200: #cfe3d5;
-    --g100: #e3efe6;
-    --g50: #f2f8f3;
-    --ink: #1b1f1d;
-    --ink2: #3e4541;
-    --muted: #7a817d;
-    --line: #e4e8e4;
-    --paper: #fbfcfa;
-    --orange: #f07a2b;
-    --blue: #2f6bdc;
-    --red: #e5484d;
-    --serif: "Instrument Serif", Georgia, serif;
+    /* Renigo brand kit palette */
+    --lime-canvas: #F0FCE0;
+    --leaf: #E4F0D4;
+    --lime: #D0E898;
+    --olive: #4C6810;
+    --deep: #384C00;
+    --ink: #141C0C;
+    /* Aliases used throughout this page */
+    --g900: var(--deep);
+    --g700: var(--olive);
+    --g600: #5C702C;
+    --g200: var(--lime);
+    --g100: var(--leaf);
+    --g50: #F6FDEC;
+    --ink2: #3B4433;
+    --muted: #5F6656;
+    --line: #DCE8CC;
+    --paper: var(--lime-canvas);
+    --orange: var(--olive);
+    --blue: var(--deep);
+    --red: #C8423A;
+    --font: "Manrope", Arial, sans-serif;
+    --serif: var(--font);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; font-family: Inter, system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--paper); line-height: 1.6; -webkit-font-smoothing: antialiased; }
   a { color: inherit; }
   img { max-width: 100%; display: block; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
 
 
   /* ---------- Nav ---------- */
-  .nav { position: sticky; top: 0; z-index: 20; background: rgba(251,252,250,.82); backdrop-filter: blur(12px); border-bottom: 1px solid transparent; transition: border-color .2s; }
+  .nav { position: sticky; top: 0; z-index: 20; background: rgba(240,252,224,.85); backdrop-filter: blur(12px); border-bottom: 1px solid transparent; transition: border-color .2s; }
   .nav.scrolled { border-color: var(--line); }
   .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.01em; text-decoration: none; }
-  .brand .mark { width: 30px; height: 30px; border-radius: 9px; background: var(--g700); color: #fff; display: grid; place-items: center; font-size: 18px; }
+  .brand { display: flex; align-items: center; text-decoration: none; }
+  .brand img { height: 30px; width: auto; }
   .nav-links { display: flex; gap: 26px; font-size: 14px; color: var(--muted); }
   .nav-links a { text-decoration: none; }
   .nav-links a:hover, .nav-links a.on { color: var(--g700); }
-  .nav-cta { font-size: 14px; font-weight: 600; color: #fff; background: var(--g700); padding: 9px 16px; border-radius: 10px; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
+  .nav-cta { font-size: 14px; font-weight: 700; color: var(--lime-canvas); background: var(--deep); padding: 9px 16px; border-radius: 10px; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
 
   /* ---------- Hero ---------- */
   .hero { position: relative; overflow: hidden; padding: 96px 0 72px; }
-  .hero::before { content: ""; position: absolute; inset: -40px; background: url("assets/renigo-bg.png") center / cover; filter: blur(24px) saturate(.8) brightness(1.1); opacity: .55; z-index: -2; }
-  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(251,252,250,.4), var(--paper) 96%); z-index: -1; }
+  .hero::before { content: ""; position: absolute; inset: -40px; background: url("assets/images/renigo-bg.png") center / cover; filter: blur(24px) saturate(.8) brightness(1.1); opacity: .55; z-index: -2; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(240,252,224,.4), var(--paper) 96%); z-index: -1; }
   .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--g700); }
-  .hero h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(48px, 7vw, 92px); line-height: 1; letter-spacing: -.02em; margin: 20px 0 24px; max-width: 13ch; }
-  .hero h1 em { color: var(--g700); }
+  .hero h1 { font-family: var(--font); font-weight: 800; font-size: clamp(44px, 6.4vw, 84px); line-height: 1.02; letter-spacing: -.035em; margin: 20px 0 24px; max-width: 13ch; }
+  .hero h1 em { color: var(--olive); font-style: normal; }
   .lede { font-size: 20px; color: var(--ink2); max-width: 58ch; margin: 0; }
   .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); }
   .meta dt { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
@@ -67,8 +85,8 @@
 
   section.chapter { padding: 96px 0; border-bottom: 1px solid var(--line); min-height: 70vh; }
   section.chapter:last-child { border-bottom: 0; }
-  .num { font-family: var(--serif); font-size: 22px; color: var(--g700); font-style: italic; }
-  h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(36px, 4.4vw, 54px); line-height: 1.05; letter-spacing: -.015em; margin: 8px 0 20px; }
+  .num { font-family: var(--font); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--olive); }
+  h2 { font-family: var(--font); font-weight: 700; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.12; letter-spacing: -.025em; margin: 10px 0 20px; }
   h3 { font-size: 18px; margin: 0 0 6px; letter-spacing: -.01em; }
   p { color: var(--ink2); margin: 0 0 16px; }
   .big { font-size: 19px; }
@@ -79,18 +97,18 @@
   .card p { font-size: 15px; margin: 0; }
   .card .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--g50); color: var(--g700); font-size: 22px; margin-bottom: 14px; }
 
-  .hmw { margin: 32px 0 0; padding: 28px 30px; border-radius: 20px; background: var(--g900); color: #fff; font-family: var(--serif); font-size: 30px; line-height: 1.2; }
-  .hmw small { display: block; font-family: Inter, sans-serif; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--g200); margin-bottom: 10px; }
+  .hmw { margin: 32px 0 0; padding: 28px 30px; border-radius: 20px; background: var(--g900); color: #fff; font-family: var(--font); font-weight: 600; font-size: 26px; line-height: 1.3; letter-spacing: -.01em; }
+  .hmw small { display: block; font-family: var(--font); font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--g200); margin-bottom: 10px; }
 
   .persona { display: flex; gap: 16px; align-items: flex-start; }
   .persona img, .persona .init { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
   .persona .init { display: grid; place-items: center; background: var(--g100); color: var(--g700); font-weight: 600; }
   .persona .role { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-  .quote { font-family: var(--serif); font-style: italic; font-size: 19px; color: var(--ink); line-height: 1.35; margin-top: 10px; }
+  .quote { font-family: var(--font); font-weight: 600; font-size: 16px; color: var(--deep); line-height: 1.45; margin-top: 12px; padding-left: 12px; border-left: 3px solid var(--lime); }
 
   .principles { counter-reset: p; display: grid; gap: 0; margin-top: 24px; }
   .principles li { list-style: none; display: grid; grid-template-columns: 48px 1fr; padding: 20px 0; border-top: 1px solid var(--line); }
-  .principles li::before { counter-increment: p; content: "0" counter(p); font-family: var(--serif); font-size: 24px; color: var(--g700); line-height: 1.2; }
+  .principles li::before { counter-increment: p; content: "0" counter(p); font-family: var(--font); font-weight: 800; font-size: 20px; color: var(--olive); line-height: 1.3; }
   .principles { padding: 0; }
 
   /* Flow chapters */
@@ -110,25 +128,31 @@
 
 
   /* ---------- Design system ---------- */
-  .wip { display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; vertical-align: middle; font-family: Inter, sans-serif; font-style: normal; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #384C00; background: #D0E898; padding: 4px 10px; border-radius: 999px; }
+  .wip { display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; vertical-align: middle; font-family: var(--font); font-style: normal; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #384C00; background: #D0E898; padding: 4px 10px; border-radius: 999px; }
   .wip i { font-size: 14px; }
+  .logo-grid { display: grid; grid-template-columns: 1.2fr 1.6fr 1.2fr 1fr; gap: 14px; }
+  .logo-tile { background: var(--lime-canvas); border-radius: 18px; min-height: 210px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; position: relative; }
+  .logo-tile img { width: auto; max-width: 100%; }
+  .logo-tile small { position: absolute; left: 18px; bottom: 14px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--olive); }
+  .logo-tile.dark { background: var(--deep); }
+  .logo-tile.dark small { color: var(--lime); }
   .wip-note { display: flex; gap: 8px; align-items: flex-start; font-size: 14.5px; color: #4C6810; background: #fff; border: 1px dashed #C4D9A0; border-radius: 12px; padding: 12px 14px; }
   .wip-note i { font-size: 18px; margin-top: 2px; }
-  .rds-band { background: #F0FCE0; }
+  .rds-band { background: var(--leaf); }
   .rds-band .num, .rds-band .ds-label { color: #4C6810; }
   .rds-band .card { border-color: #E4F0D4; }
   .rds-band .sw { border-color: #E4F0D4; }
-  .rds, .rds-band .type-spec { font-family: "Plus Jakarta Sans", Inter, sans-serif; }
-  .ds-label { font-family: Inter, sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin: 26px 0 12px; }
+  .rds, .rds-band .type-spec { font-family: var(--font); }
+  .ds-label { font-family: var(--font); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin: 26px 0 12px; }
   .rds-band .type-spec b { color: #141C0C; }
   .t-body { font-size: 14px; color: #585C50 !important; font-family: inherit !important; }
   .t-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #141C0C !important; font-family: inherit !important; }
   .comp-col { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
-  .r-btn { height: 48px; border-radius: 14px; background: #4C6810; color: #fff; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 20px; }
+  .r-btn { height: 48px; border-radius: 14px; background: #384C00; color: #F0FCE0; font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 20px; }
   .r-btn.soft { background: #E4F0D4; color: #384C00; }
   .r-btn.dark { background: #283020; }
   .r-btn.ghost { background: #fff; color: #141C0C; border: 1px solid #E4F0D4; }
-  .r-btn.sm { height: 44px; font-size: 14px; flex: 1; }
+  .r-btn.sm { height: 44px; font-size: 14px; flex: 1 1 140px; white-space: nowrap; }
   .r-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #E4F0D4; color: #384C00; font-size: 12.5px; font-weight: 600; }
   .r-pill.lime { background: #D0E898; }
   .r-pill.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #4C6810; }
@@ -166,12 +190,13 @@
   .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
   .sw { border-radius: 16px; overflow: hidden; background: #fff; border: 1px solid var(--line); }
   .sw .chip { height: 96px; }
+  .rds-band .sw { border: 0; }
   .sw .lbl { padding: 12px 14px; font-size: 13px; }
   .sw .lbl b { display: block; font-weight: 600; }
   .sw .lbl span { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
 
   .ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-  .type-spec div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .type-spec div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 16px; row-gap: 2px; padding: 12px 0; border-top: 1px solid var(--line); }
   .type-spec div:first-child { border-top: 0; }
   .type-spec span { font-size: 12px; color: var(--muted); font-family: ui-monospace, Menlo, monospace; white-space: nowrap; }
   .comp-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
@@ -189,7 +214,7 @@
 
   .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
   .metric .target { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .metric .val { font-family: var(--serif); font-size: 52px; line-height: 1; color: var(--g700); margin-bottom: 10px; }
+  .metric .val { font-family: var(--font); font-weight: 800; font-size: 46px; line-height: 1; letter-spacing: -.03em; color: var(--deep); margin-bottom: 10px; }
   .metric .what { font-weight: 600; margin-bottom: 4px; }
   .metric p { font-size: 14.5px; }
   .next { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px; }
@@ -199,25 +224,28 @@
   .next-group i { font-size: 18px; }
 
   .reflection { max-width: 760px; }
-  .reflection blockquote { margin: 0; font-family: var(--serif); font-size: clamp(26px, 3vw, 36px); line-height: 1.25; color: var(--ink); }
+  .reflection blockquote { margin: 0; font-family: var(--font); font-weight: 700; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.3; letter-spacing: -.02em; color: var(--ink); }
 
   footer { padding: 48px 0 64px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
   footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 
   /* Mobile phone preview (story layout collapses) */
-  .inline-phone { display: none; overflow-x: clip; }
+  .inline-phone { display: none; }
 
   @media (max-width: 1020px) {
-    .story { grid-template-columns: 1fr; gap: 0; }
+    .story { grid-template-columns: minmax(0, 1fr); gap: 0; }
     .stage { display: none; }
+    .logo-grid { grid-template-columns: 1fr 1fr; }
     .inline-phone { display: flex; justify-content: center; margin: 32px 0 0; }
-    .inline-phone .phone-holder { transform: scale(.82); margin: -85px -43px; }
-    .meta { grid-template-columns: 1fr; }
     .swatches { grid-template-columns: repeat(3, 1fr); }
-    .ds-grid, .metrics, .next, .next.three { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
     .nav-links { display: none; }
+    .ds-grid, .metrics, .next, .next.three { grid-template-columns: 1fr; }
+    .logo-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 620px) {
+    .meta { grid-template-columns: 1fr; gap: 16px; margin-top: 36px; }
     .wrap { padding: 0 16px; }
     .hero { padding: 64px 0 48px; }
     .lede { font-size: 18px; }
@@ -226,7 +254,6 @@
     .band { padding: 72px 0; }
     .swatches { grid-template-columns: repeat(2, 1fr); }
     .icons { grid-template-columns: repeat(4, 1fr); }
-    .inline-phone .phone-holder { transform: scale(.66); margin: -160px -82px; }
     .r-tiles, .r-options { grid-template-columns: 1fr; }
     .hmw { font-size: 24px; padding: 22px; }
     .nav-cta span { display: none; }
@@ -237,7 +264,7 @@
 
 <header class="nav" id="nav">
   <div class="wrap">
-    <a href="#top" class="brand"><span class="mark"><i class="ti ti-home-2"></i></span>Renigo</a>
+    <a href="#top" class="brand" aria-label="Renigo, back to top"><img src="assets/brand/renigo-horizontal-full-color.svg" alt="Renigo" /></a>
     <nav class="nav-links">
       <a href="#problem">Problem</a>
       <a href="#people">People</a>
@@ -291,11 +318,11 @@
       <h2>Designed for a household, not a single user.</h2>
       <p>A unit is shared by an owner, their family and sometimes a helper. The household model shapes almost every permission in the app.</p>
       <div class="cards" style="grid-template-columns:1fr">
-        <div class="card persona"><img src="assets/web/renigo-jm.jpg" alt="" />
+        <div class="card persona"><img src="assets/images/renigo-jm.jpg" alt="" />
           <div><h3>John, the owner</h3><div class="role">Primary account · manages the unit</div>
           <p>Books facilities on weekends, approves contractors, and wants to know who's at the gate while he's at work.</p>
           <div class="quote">Needs to know his guest got in, without being called out of a meeting.</div></div></div>
-        <div class="card persona"><img src="assets/web/renigo-jp.jpg" alt="" />
+        <div class="card persona"><img src="assets/images/renigo-jp.jpg" alt="" />
           <div><h3>Paul, a family member</h3><div class="role">Full access · lives in the unit</div>
           <p>Invites friends over and reserves the tennis court, but shouldn't be able to remove household members or pay dues.</p></div></div>
         <div class="card persona"><div class="init">CL</div>
@@ -397,7 +424,7 @@
     <div class="band-head">
       <div class="num">06 — Design system <span class="wip"><i class="ti ti-progress"></i> In progress</span></div>
       <h2>A shared language, taking shape.</h2>
-      <p>Alongside the product, we're building a design system so every Renigo screen draws from the same small set of tokens and components: a calm olive-and-lime palette, generous rounded type, and status that is always spelled out on the screen.</p>
+      <p>Alongside the product, we're building a design system on top of the Renigo brand kit: six colours, Manrope for every word in the product, and one logo across the homeowner, administration and security apps.</p>
       <p class="wip-note"><i class="ti ti-info-circle"></i> This is a working snapshot. Colours, type and components may still be refined before release.</p>
     </div>
 
@@ -411,15 +438,22 @@
       <div class="sw"><div class="chip" style="background:#141C0C"></div><div class="lbl"><b>Ink</b><span>#141C0C</span></div></div>
     </div>
 
+    <h3 class="ds-label">Logo</h3>
+    <div class="logo-grid">
+      <div class="logo-tile"><img src="assets/brand/renigo-stacked-full-color.svg" alt="Renigo stacked logo" style="height:120px" /><small>Primary · stacked</small></div>
+      <div class="logo-tile"><img src="assets/brand/renigo-horizontal-full-color.svg" alt="Renigo horizontal logo" style="height:56px" /><small>Alternate · horizontal</small></div>
+      <div class="logo-tile dark"><img src="assets/brand/renigo-stacked-reverse.svg" alt="Renigo reverse logo" style="height:120px" /><small>Reverse · on deep olive</small></div>
+      <div class="logo-tile"><img src="assets/brand/renigo-icon-full-color.svg" alt="Renigo icon" style="height:72px" /><small>Icon</small></div>
+    </div>
+
     <div class="ds-grid rds">
       <div class="card">
-        <h3 class="ds-label" style="margin-top:0">Typography · Plus Jakarta Sans</h3>
+        <h3 class="ds-label" style="margin-top:0">Typography · Manrope</h3>
         <div class="type-spec">
-          <div><b style="font-size:28px;font-weight:600;letter-spacing:-.02em">Welcome home</b><span>28 · Semibold</span></div>
-          <div><b style="font-size:22px;font-weight:600;letter-spacing:-.01em">Visitor details</b><span>22 · Semibold</span></div>
-          <div><b style="font-size:17px;font-weight:500">Manage your property</b><span>17 · Medium</span></div>
-          <div><span class="t-body">Arriving today at 6:00 PM</span><span>14 · Regular</span></div>
-          <div><span class="t-eyebrow">Section label</span><span>11 · Semibold caps</span></div>
+          <div><b style="font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.25">Welcome home</b><span>Heading · 32/40 · 700</span></div>
+          <div><b style="font-size:20px;font-weight:600;line-height:1.4">Manage your home</b><span>Subheading · 20/28 · 600</span></div>
+          <div><span class="t-body" style="font-size:16px">Arriving today at 6:00 PM</span><span>Body · 16/24 · 400</span></div>
+          <div><span class="t-eyebrow" style="font-size:14px;letter-spacing:0;text-transform:none">Book a facility</span><span>Label · 14/20 · 600</span></div>
         </div>
       </div>
 
@@ -526,6 +560,17 @@
     holder.style.margin = `${-(940 * (1 - s)) / 2}px ${-(480 * (1 - s)) / 2}px`;
   }
   fit(); addEventListener('resize', fit);
+
+  // Scale the inline phone (narrow screens) to the column width so it never overflows
+  const inlineHolder = document.querySelector('.inline-phone .phone-holder');
+  function fitInline() {
+    const cw = inlineHolder.parentElement.clientWidth;
+    if (!cw) return;
+    const s = Math.min(.85, cw / 480);
+    inlineHolder.style.transform = `scale(${s})`;
+    inlineHolder.style.margin = `${-(940 * (1 - s)) / 2}px ${-(480 * (1 - s)) / 2}px`;
+  }
+  fitInline(); addEventListener('resize', fitInline);
 
   // Drive the phone from whichever chapter sits in the middle of the viewport
   const io = new IntersectionObserver(entries => {
