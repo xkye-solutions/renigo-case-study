@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Renigo Case Study</title>
+<meta name="description" content="Renigo — a resident app for gated villages. A case study by Xkye Solutions with a live interactive prototype." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --g900: #1f4d33;
+    --g700: #2e6b47;
+    --g600: #3a7d55;
+    --g200: #cfe3d5;
+    --g100: #e3efe6;
+    --g50: #f2f8f3;
+    --ink: #1b1f1d;
+    --ink2: #3e4541;
+    --muted: #7a817d;
+    --line: #e4e8e4;
+    --paper: #fbfcfa;
+    --orange: #f07a2b;
+    --blue: #2f6bdc;
+    --red: #e5484d;
+    --serif: "Instrument Serif", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: Inter, system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+
+
+  /* ---------- Nav ---------- */
+  .nav { position: sticky; top: 0; z-index: 20; background: rgba(251,252,250,.82); backdrop-filter: blur(12px); border-bottom: 1px solid transparent; transition: border-color .2s; }
+  .nav.scrolled { border-color: var(--line); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.01em; text-decoration: none; }
+  .brand .mark { width: 30px; height: 30px; border-radius: 9px; background: var(--g700); color: #fff; display: grid; place-items: center; font-size: 18px; }
+  .nav-links { display: flex; gap: 26px; font-size: 14px; color: var(--muted); }
+  .nav-links a { text-decoration: none; }
+  .nav-links a:hover, .nav-links a.on { color: var(--g700); }
+  .nav-cta { font-size: 14px; font-weight: 600; color: #fff; background: var(--g700); padding: 9px 16px; border-radius: 10px; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; overflow: hidden; padding: 96px 0 72px; }
+  .hero::before { content: ""; position: absolute; inset: -40px; background: url("assets/renigo-bg.png") center / cover; filter: blur(24px) saturate(.8) brightness(1.1); opacity: .55; z-index: -2; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(251,252,250,.4), var(--paper) 96%); z-index: -1; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--g700); }
+  .hero h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(48px, 7vw, 92px); line-height: 1; letter-spacing: -.02em; margin: 20px 0 24px; max-width: 13ch; }
+  .hero h1 em { color: var(--g700); }
+  .lede { font-size: 20px; color: var(--ink2); max-width: 58ch; margin: 0; }
+  .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); }
+  .meta dt { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+  .meta dd { margin: 0; font-weight: 500; }
+
+  /* ---------- Story + sticky phone ---------- */
+  .story { display: grid; grid-template-columns: minmax(0, 1fr) 440px; gap: 56px; }
+  .stage { position: sticky; top: 64px; height: calc(100vh - 64px); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .phone-holder { width: 480px; height: 940px; transform-origin: center; flex-shrink: 0; }
+  .phone-holder iframe { width: 480px; height: 940px; border: 0; background: transparent; }
+  .stage-caption { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; margin-top: -4px; }
+  .stage-caption .live { width: 8px; height: 8px; border-radius: 50%; background: #2bb15c; box-shadow: 0 0 0 4px rgba(43,177,92,.18); }
+
+  section.chapter { padding: 96px 0; border-bottom: 1px solid var(--line); min-height: 70vh; }
+  section.chapter:last-child { border-bottom: 0; }
+  .num { font-family: var(--serif); font-size: 22px; color: var(--g700); font-style: italic; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(36px, 4.4vw, 54px); line-height: 1.05; letter-spacing: -.015em; margin: 8px 0 20px; }
+  h3 { font-size: 18px; margin: 0 0 6px; letter-spacing: -.01em; }
+  p { color: var(--ink2); margin: 0 0 16px; }
+  .big { font-size: 19px; }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+  .cards.three { grid-template-columns: repeat(3, 1fr); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+  .card p { font-size: 15px; margin: 0; }
+  .card .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--g50); color: var(--g700); font-size: 22px; margin-bottom: 14px; }
+
+  .hmw { margin: 32px 0 0; padding: 28px 30px; border-radius: 20px; background: var(--g900); color: #fff; font-family: var(--serif); font-size: 30px; line-height: 1.2; }
+  .hmw small { display: block; font-family: Inter, sans-serif; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--g200); margin-bottom: 10px; }
+
+  .persona { display: flex; gap: 16px; align-items: flex-start; }
+  .persona img, .persona .init { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  .persona .init { display: grid; place-items: center; background: var(--g100); color: var(--g700); font-weight: 600; }
+  .persona .role { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .quote { font-family: var(--serif); font-style: italic; font-size: 19px; color: var(--ink); line-height: 1.35; margin-top: 10px; }
+
+  .principles { counter-reset: p; display: grid; gap: 0; margin-top: 24px; }
+  .principles li { list-style: none; display: grid; grid-template-columns: 48px 1fr; padding: 20px 0; border-top: 1px solid var(--line); }
+  .principles li::before { counter-increment: p; content: "0" counter(p); font-family: var(--serif); font-size: 24px; color: var(--g700); line-height: 1.2; }
+  .principles { padding: 0; }
+
+  /* Flow chapters */
+  .flow-head { display: flex; align-items: center; gap: 12px; }
+  .flow-head .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--g50); color: var(--g700); font-size: 24px; }
+  .decisions { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+  .decisions li { display: grid; grid-template-columns: 26px 1fr; gap: 6px; font-size: 15.5px; color: var(--ink2); }
+  .decisions li i { color: var(--g700); font-size: 20px; margin-top: 1px; }
+  .decisions b { color: var(--ink); font-weight: 600; }
+  .try { margin-top: 26px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--g700); background: var(--g50); border: 1px solid var(--g100); padding: 10px 16px; border-radius: 12px; cursor: pointer; font-family: inherit; }
+  .try:hover { background: var(--g100); }
+  .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+  .before-after div { border-radius: 14px; padding: 16px 18px; font-size: 14.5px; }
+  .before-after .b { background: #f6f3ef; color: #6b5d4f; }
+  .before-after .a { background: var(--g50); color: var(--g900); }
+  .before-after small { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; opacity: .8; }
+
+
+  /* ---------- Design system ---------- */
+  .wip { display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; vertical-align: middle; font-family: Inter, sans-serif; font-style: normal; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #384C00; background: #D0E898; padding: 4px 10px; border-radius: 999px; }
+  .wip i { font-size: 14px; }
+  .wip-note { display: flex; gap: 8px; align-items: flex-start; font-size: 14.5px; color: #4C6810; background: #fff; border: 1px dashed #C4D9A0; border-radius: 12px; padding: 12px 14px; }
+  .wip-note i { font-size: 18px; margin-top: 2px; }
+  .rds-band { background: #F0FCE0; }
+  .rds-band .num, .rds-band .ds-label { color: #4C6810; }
+  .rds-band .card { border-color: #E4F0D4; }
+  .rds-band .sw { border-color: #E4F0D4; }
+  .rds, .rds-band .type-spec { font-family: "Plus Jakarta Sans", Inter, sans-serif; }
+  .ds-label { font-family: Inter, sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin: 26px 0 12px; }
+  .rds-band .type-spec b { color: #141C0C; }
+  .t-body { font-size: 14px; color: #585C50 !important; font-family: inherit !important; }
+  .t-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #141C0C !important; font-family: inherit !important; }
+  .comp-col { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+  .r-btn { height: 48px; border-radius: 14px; background: #4C6810; color: #fff; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 20px; }
+  .r-btn.soft { background: #E4F0D4; color: #384C00; }
+  .r-btn.dark { background: #283020; }
+  .r-btn.ghost { background: #fff; color: #141C0C; border: 1px solid #E4F0D4; }
+  .r-btn.sm { height: 44px; font-size: 14px; flex: 1; }
+  .r-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #E4F0D4; color: #384C00; font-size: 12.5px; font-weight: 600; }
+  .r-pill.lime { background: #D0E898; }
+  .r-pill.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #4C6810; }
+  .r-pill.caps { text-transform: uppercase; font-size: 11px; letter-spacing: .05em; }
+  .r-step { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #384C00; font-weight: 500; }
+  .r-bar { height: 6px; border-radius: 3px; background: #E4F0D4; margin: 12px 0 20px; overflow: hidden; }
+  .r-bar i { display: block; height: 100%; background: #384C00; border-radius: 3px; }
+  .r-field-l { display: block; font-size: 13.5px; font-weight: 500; margin-bottom: 8px; color: #141C0C; }
+  .r-input { height: 48px; border-radius: 12px; background: #ECF8DC; display: flex; align-items: center; gap: 10px; padding: 0 14px; color: #888C84; font-size: 14.5px; }
+  .r-input i { font-size: 20px; color: #585C50; }
+  .r-seg { display: flex; gap: 8px; margin-top: 14px; }
+  .r-seg span { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; border-radius: 10px; background: #F0F2EC; font-size: 13px; font-weight: 500; color: #3a3f35; }
+  .r-seg span.on { background: #D0E898; color: #384C00; }
+  .r-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .r-tile { position: relative; background: #fff; border: 1px solid #E4F0D4; border-radius: 16px; padding: 14px; }
+  .r-tile b { display: block; font-size: 16px; font-weight: 600; margin-top: 18px; color: #141C0C; }
+  .r-tile small { color: #585C50; font-size: 12.5px; }
+  .r-ic { width: 38px; height: 38px; border-radius: 10px; background: #E4F0D4; color: #384C00; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
+  .r-dot { position: absolute; top: 18px; right: 16px; width: 8px; height: 8px; border-radius: 50%; background: #4C6810; }
+  .r-tag { position: absolute; top: 16px; right: 14px; font-size: 12px; font-weight: 600; color: #4C6810; }
+  .r-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .r-opt { display: flex; gap: 10px; align-items: center; padding: 12px; border-radius: 14px; background: #fff; border: 1px solid #E4F0D4; }
+  .r-opt b { display: block; font-size: 14px; font-weight: 600; color: #141C0C; }
+  .r-opt small { font-size: 12px; color: #585C50; }
+  .r-opt.on { background: #D0E898; border-color: #D0E898; }
+  .r-opt.on .r-ic { background: #4C6810; color: #fff; }
+  .r-opt.on b, .r-opt.on small { color: #384C00; }
+
+
+  /* ---------- Full-width sections ---------- */
+  .band { padding: 112px 0; border-top: 1px solid var(--line); }
+  .band.tint { background: #f3f7f1; }
+  .band-head { max-width: 680px; margin-bottom: 48px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .sw { border-radius: 16px; overflow: hidden; background: #fff; border: 1px solid var(--line); }
+  .sw .chip { height: 96px; }
+  .sw .lbl { padding: 12px 14px; font-size: 13px; }
+  .sw .lbl b { display: block; font-weight: 600; }
+  .sw .lbl span { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+
+  .ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .type-spec div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .type-spec div:first-child { border-top: 0; }
+  .type-spec span { font-size: 12px; color: var(--muted); font-family: ui-monospace, Menlo, monospace; white-space: nowrap; }
+  .comp-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+  .c-btn { height: 44px; padding: 0 22px; border-radius: 12px; background: var(--g700); color: #fff; font-weight: 600; display: inline-flex; align-items: center; font-size: 15px; }
+  .c-btn.soft { background: var(--g100); color: var(--g900); }
+  .c-chip { padding: 7px 15px; border-radius: 999px; font-size: 13px; background: var(--g50); color: var(--muted); }
+  .c-chip.on { background: var(--g700); color: #fff; }
+  .c-badge { padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--g100); color: var(--g700); }
+  .c-badge.blue { background: #e4edfc; color: var(--blue); }
+  .c-badge.amber { background: #fdf1d8; color: #9a6a0c; }
+  .c-badge.grey { background: #eef0ef; color: var(--muted); }
+  .c-tag { display: inline-flex; gap: 5px; align-items: center; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; color: var(--orange); background: #fdeee3; padding: 4px 8px; border-radius: 6px; }
+  .icons { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-top: 4px; }
+  .icons i { aspect-ratio: 1; display: grid; place-items: center; font-size: 24px; color: var(--blue); background: var(--paper); border-radius: 12px; border: 1px solid var(--line); }
+
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .metric .target { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .metric .val { font-family: var(--serif); font-size: 52px; line-height: 1; color: var(--g700); margin-bottom: 10px; }
+  .metric .what { font-weight: 600; margin-bottom: 4px; }
+  .metric p { font-size: 14.5px; }
+  .next { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px; }
+  .next.three { grid-template-columns: repeat(3, 1fr); }
+  .next .card .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--g50); color: var(--g700); font-size: 22px; margin-bottom: 14px; }
+  .next-group { display: flex; align-items: center; gap: 8px; margin: 36px 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--g700); }
+  .next-group i { font-size: 18px; }
+
+  .reflection { max-width: 760px; }
+  .reflection blockquote { margin: 0; font-family: var(--serif); font-size: clamp(26px, 3vw, 36px); line-height: 1.25; color: var(--ink); }
+
+  footer { padding: 48px 0 64px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  /* Mobile phone preview (story layout collapses) */
+  .inline-phone { display: none; overflow-x: clip; }
+
+  @media (max-width: 1020px) {
+    .story { grid-template-columns: 1fr; gap: 0; }
+    .stage { display: none; }
+    .inline-phone { display: flex; justify-content: center; margin: 32px 0 0; }
+    .inline-phone .phone-holder { transform: scale(.82); margin: -85px -43px; }
+    .meta { grid-template-columns: 1fr; }
+    .swatches { grid-template-columns: repeat(3, 1fr); }
+    .ds-grid, .metrics, .next, .next.three { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 620px) {
+    .wrap { padding: 0 16px; }
+    .hero { padding: 64px 0 48px; }
+    .lede { font-size: 18px; }
+    .cards, .cards.three, .before-after { grid-template-columns: 1fr; }
+    section.chapter { padding: 64px 0; min-height: 0; }
+    .band { padding: 72px 0; }
+    .swatches { grid-template-columns: repeat(2, 1fr); }
+    .icons { grid-template-columns: repeat(4, 1fr); }
+    .inline-phone .phone-holder { transform: scale(.66); margin: -160px -82px; }
+    .r-tiles, .r-options { grid-template-columns: 1fr; }
+    .hmw { font-size: 24px; padding: 22px; }
+    .nav-cta span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a href="#top" class="brand"><span class="mark"><i class="ti ti-home-2"></i></span>Renigo</a>
+    <nav class="nav-links">
+      <a href="#problem">Problem</a>
+      <a href="#people">People</a>
+      <a href="#flows">Key flows</a>
+      <a href="#system">Design system</a>
+      <a href="#outcomes">Outcomes</a>
+    </nav>
+    <a class="nav-cta" href="prototype.html" target="_blank" rel="noopener"><i class="ti ti-device-mobile"></i><span>Open prototype</span></a>
+  </div>
+</header>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow"><i class="ti ti-building-community"></i> Xkye Solutions · Case study · Residential community app</div>
+    <h1>Village life, <em>without</em> the logbook.</h1>
+    <p class="lede">Renigo brings visitor passes, facility bookings, worker logs, service requests and village news into one calm app for residents of gated communities, on the web and on their phones.</p>
+    <dl class="meta">
+      <div><dt>Studio</dt><dd>Xkye Solutions</dd></div>
+      <div><dt>Platform</dt><dd>Web &amp; mobile</dd></div>
+      <div><dt>Scope</dt><dd>Product design &amp; development</dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap story">
+  <div class="chapters">
+
+    <section class="chapter" id="context" data-goto='{"tab":"home"}'>
+      <div class="num">01 — Context</div>
+      <h2>Living in a village means talking to a lot of people.</h2>
+      <p class="big">In many gated communities, the everyday admin of home life runs through people and paper: a call to the guardhouse to let a guest in, a trip to the admin office to reserve the pool, a group chat where the water-interruption notice gets buried under memes.</p>
+      <p>Each task is small. Together they add up to friction for residents, guesswork for guards, and spreadsheets for the homeowners' association.</p>
+      <div class="inline-phone"><div class="phone-holder"><iframe src="prototype.html" title="Renigo interactive prototype" loading="lazy"></iframe></div></div>
+    </section>
+
+    <section class="chapter" id="problem" data-goto='{"tab":"home"}'>
+      <div class="num">02 — The problem</div>
+      <h2>Too many channels, no single source of truth.</h2>
+      <p>The same village runs on at least four disconnected channels. None of them tell a resident what's happening <em>now</em>.</p>
+      <div class="cards">
+        <div class="card"><div class="ic"><i class="ti ti-phone-call"></i></div><h3>Visitors by phone call</h3><p>Guards rely on a resident picking up to confirm a guest. Missed calls mean guests waiting at the gate.</p></div>
+        <div class="card"><div class="ic"><i class="ti ti-notebook"></i></div><h3>Bookings on paper</h3><p>Facility slots live in an office logbook, so residents can't see availability before they ask.</p></div>
+        <div class="card"><div class="ic"><i class="ti ti-tool"></i></div><h3>Workers untracked</h3><p>Gardeners and contractors come and go with no record of who is inside the village right now.</p></div>
+        <div class="card"><div class="ic"><i class="ti ti-messages"></i></div><h3>News in group chats</h3><p>Important notices compete with everything else in the chat and are hard to find later.</p></div>
+      </div>
+      <div class="hmw"><small>How might we</small>give residents one calm place to manage who comes in, what they book, and what needs fixing, without a single phone call?</div>
+    </section>
+
+    <section class="chapter" id="people" data-goto='{"screen":"household"}'>
+      <div class="num">03 — People</div>
+      <h2>Designed for a household, not a single user.</h2>
+      <p>A unit is shared by an owner, their family and sometimes a helper. The household model shapes almost every permission in the app.</p>
+      <div class="cards" style="grid-template-columns:1fr">
+        <div class="card persona"><img src="assets/web/renigo-jm.jpg" alt="" />
+          <div><h3>John, the owner</h3><div class="role">Primary account · manages the unit</div>
+          <p>Books facilities on weekends, approves contractors, and wants to know who's at the gate while he's at work.</p>
+          <div class="quote">Needs to know his guest got in, without being called out of a meeting.</div></div></div>
+        <div class="card persona"><img src="assets/web/renigo-jp.jpg" alt="" />
+          <div><h3>Paul, a family member</h3><div class="role">Full access · lives in the unit</div>
+          <p>Invites friends over and reserves the tennis court, but shouldn't be able to remove household members or pay dues.</p></div></div>
+        <div class="card persona"><div class="init">CL</div>
+          <div><h3>Chris, a sub-account</h3><div class="role">Limited access · e.g. a helper or tenant</div>
+          <p>Can invite visitors and book facilities, but can't log workers or change who belongs to the household.</p></div></div>
+      </div>
+    </section>
+
+    <section class="chapter" id="principles" data-goto='{"tab":"home"}'>
+      <div class="num">04 — Principles</div>
+      <h2>Four rules that guided every screen.</h2>
+      <ol class="principles">
+        <li><div><h3>One tap from Home</h3><p>Every core task sits on the home grid. Residents shouldn't hunt through menus for the thing they do every week.</p></div></li>
+        <li><div><h3>Status is always visible</h3><p>Green dots for workers inside, badges for passes and requests. You can tell what's happening at a glance.</p></div></li>
+        <li><div><h3>Forms that forgive</h3><p>Dates pre-filled to today, inline validation that clears as you type, and short forms that sit in a sheet over the screen you came from.</p></div></li>
+        <li><div><h3>Calm, not corporate</h3><p>A soft green palette and real photography make it feel like the village itself, not an admin portal.</p></div></li>
+      </ol>
+    </section>
+
+    <div id="flows"></div>
+
+    <section class="chapter" data-goto='{"tab":"home"}'>
+      <div class="num">05 — Key flows</div>
+      <div class="flow-head"><div class="ic"><i class="ti ti-home"></i></div><h2 style="margin:0">Home</h2></div>
+      <p style="margin-top:18px">The home screen is a dashboard for the unit: your gate pass one tap away, everything coming up today, six places to manage your home, and the one piece of news that matters.</p>
+      <ul class="decisions">
+        <li><i class="ti ti-circle-check"></i><span><b>Gate pass first.</b> The thing residents need at the gate sits at the top, not behind a menu.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>Live counts on every tile.</b> "2 on site", "1 open" and the plate number show the state of the home before you tap.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>Red dot on the bell only when it matters.</b> Opening notifications clears it, so the dot never becomes noise.</span></li>
+      </ul>
+      <button class="try" data-goto='{"tab":"home"}'><i class="ti ti-hand-finger"></i> Show on the phone</button>
+    </section>
+
+    <section class="chapter" data-goto='{"screen":"facilities","action":"book","data":{"id":"pool"}}'>
+      <div class="flow-head"><div class="ic"><i class="ti ti-calendar-event"></i></div><h2 style="margin:0">Facility booking</h2></div>
+      <p style="margin-top:18px">Residents browse by category and book in a single sheet: pick a day, a two-hour slot and the number of guests.</p>
+      <div class="before-after">
+        <div class="b"><small>Before</small>Walk to the admin office, ask if Saturday is free, write your name in the logbook.</div>
+        <div class="a"><small>After</small>See open slots for the next 10 days and confirm in three taps.</div>
+      </div>
+      <ul class="decisions">
+        <li><i class="ti ti-circle-check"></i><span><b>Taken slots stay visible but struck through</b>, so people see the facility is popular rather than wondering if it's broken.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>The confirm button says what you're booking</b> ("Confirm · 18 Oct, 4:00 PM") so there's no surprise afterwards.</span></li>
+      </ul>
+      <button class="try" data-goto='{"screen":"facilities","action":"book","data":{"id":"pool"}}'><i class="ti ti-hand-finger"></i> Try booking the pool</button>
+    </section>
+
+    <section class="chapter" data-goto='{"screen":"visitors","sub":{"vp":"invite"}}'>
+      <div class="flow-head"><div class="ic"><i class="ti ti-user"></i></div><h2 style="margin:0">Visitor pass</h2></div>
+      <p style="margin-top:18px">Instead of calling the guardhouse, residents send their guest a pass. The guest shows a QR code or keys in a PIN at the gate, and the resident gets a notification when they arrive.</p>
+      <ul class="decisions">
+        <li><i class="ti ti-circle-check"></i><span><b>Grouped into three short cards:</b> who is coming, whether they're driving, and when.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>Purpose and dates are one-tap chips</b>, and a visitor bay is assigned automatically when the guest is driving.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>The pass opens immediately after sending</b>, ready to share, add to a wallet or revoke on the spot.</span></li>
+      </ul>
+      <button class="try" data-goto='{"screen":"visitors","sub":{"vp":"invite"}}'><i class="ti ti-hand-finger"></i> Try inviting a visitor</button>
+    </section>
+
+    <section class="chapter" data-goto='{"screen":"workers"}'>
+      <div class="flow-head"><div class="ic"><i class="ti ti-users"></i></div><h2 style="margin:0">Household staff</h2></div>
+      <p style="margin-top:18px">Helpers and contractors each get their own schedule and gate access, so residents always know who is at home and when they're allowed in.</p>
+      <ul class="decisions">
+        <li><i class="ti ti-circle-check"></i><span><b>On site, scheduled and off site at a glance</b>, with search and filters for larger households.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>A four-step registration</b> covers identity, role, working days with an entry window, and which gates they can use.</span></li>
+      </ul>
+      <button class="try" data-goto='{"screen":"workers"}'><i class="ti ti-hand-finger"></i> Show household staff</button>
+    </section>
+
+    <section class="chapter" data-goto='{"screen":"service","sub":{"sr":"new"}}'>
+      <div class="flow-head"><div class="ic"><i class="ti ti-file-pencil"></i></div><h2 style="margin:0">Service requests</h2></div>
+      <p style="margin-top:18px">Six large categories turn "who do I even call about this?" into a single tap, followed by a short description and a preferred date.</p>
+      <ul class="decisions">
+        <li><i class="ti ti-circle-check"></i><span><b>Category first, details second.</b> Picking the type routes the request to the right team before the resident types a word.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>Every request gets an ID and a status</b> (Pending, In Progress, Completed), so follow-ups don't need a phone call.</span></li>
+      </ul>
+      <button class="try" data-goto='{"screen":"service","sub":{"sr":"new"}}'><i class="ti ti-hand-finger"></i> Try a request</button>
+    </section>
+
+    <section class="chapter" data-goto='{"screen":"parking"}'>
+      <div class="flow-head"><div class="ic"><i class="ti ti-parking"></i></div><h2 style="margin:0">Parking</h2></div>
+      <p style="margin-top:18px">Your active vehicle and season-parking status at the top, with registration, visitor slots and history underneath.</p>
+      <ul class="decisions">
+        <li><i class="ti ti-circle-check"></i><span><b>Multi-car households switch vehicles</b> rather than registering again, keeping one record per car.</span></li>
+        <li><i class="ti ti-circle-check"></i><span><b>Visitor parking pairs with visitor passes</b>, so a guest who drives gets a slot as well as a gate pass.</span></li>
+      </ul>
+      <button class="try" data-goto='{"screen":"parking"}'><i class="ti ti-hand-finger"></i> Show parking</button>
+    </section>
+
+  </div>
+
+  <aside class="stage" aria-label="Live prototype">
+    <div class="phone-holder" id="phoneHolder"><iframe id="proto" src="prototype.html" title="Renigo interactive prototype"></iframe></div>
+    <div class="stage-caption"><span class="live"></span> Live prototype. Tap around, it's interactive.</div>
+  </aside>
+</main>
+
+<section class="band rds-band" id="system">
+  <div class="wrap">
+    <div class="band-head">
+      <div class="num">06 — Design system <span class="wip"><i class="ti ti-progress"></i> In progress</span></div>
+      <h2>A shared language, taking shape.</h2>
+      <p>Alongside the product, we're building a design system so every Renigo screen draws from the same small set of tokens and components: a calm olive-and-lime palette, generous rounded type, and status that is always spelled out on the screen.</p>
+      <p class="wip-note"><i class="ti ti-info-circle"></i> This is a working snapshot. Colours, type and components may still be refined before release.</p>
+    </div>
+
+    <h3 class="ds-label">Colour</h3>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#F0FCE0;box-shadow:inset 0 0 0 1px #DCE8CC"></div><div class="lbl"><b>Lime canvas</b><span>#F0FCE0</span></div></div>
+      <div class="sw"><div class="chip" style="background:#E4F0D4"></div><div class="lbl"><b>Leaf surface</b><span>#E4F0D4</span></div></div>
+      <div class="sw"><div class="chip" style="background:#D0E898"></div><div class="lbl"><b>Lime accent</b><span>#D0E898</span></div></div>
+      <div class="sw"><div class="chip" style="background:#4C6810"></div><div class="lbl"><b>Olive</b><span>#4C6810</span></div></div>
+      <div class="sw"><div class="chip" style="background:#384C00"></div><div class="lbl"><b>Deep olive</b><span>#384C00</span></div></div>
+      <div class="sw"><div class="chip" style="background:#141C0C"></div><div class="lbl"><b>Ink</b><span>#141C0C</span></div></div>
+    </div>
+
+    <div class="ds-grid rds">
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Typography · Plus Jakarta Sans</h3>
+        <div class="type-spec">
+          <div><b style="font-size:28px;font-weight:600;letter-spacing:-.02em">Welcome home</b><span>28 · Semibold</span></div>
+          <div><b style="font-size:22px;font-weight:600;letter-spacing:-.01em">Visitor details</b><span>22 · Semibold</span></div>
+          <div><b style="font-size:17px;font-weight:500">Manage your property</b><span>17 · Medium</span></div>
+          <div><span class="t-body">Arriving today at 6:00 PM</span><span>14 · Regular</span></div>
+          <div><span class="t-eyebrow">Section label</span><span>11 · Semibold caps</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Actions</h3>
+        <div class="comp-col">
+          <span class="r-btn">Continue <i class="ti ti-arrow-right"></i></span>
+          <span class="r-btn soft"><i class="ti ti-arrow-left"></i> Back</span>
+          <div class="comp-row" style="margin:0"><span class="r-btn dark sm"><i class="ti ti-wallet"></i> Add to Wallet</span><span class="r-btn ghost sm"><i class="ti ti-share"></i> Send via App</span></div>
+        </div>
+        <h3 class="ds-label">Status</h3>
+        <div class="comp-row">
+          <span class="r-pill dot">Active</span><span class="r-pill lime">Approved</span><span class="r-pill">Confirmed</span><span class="r-pill">Pending</span><span class="r-pill caps">Required</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Progress &amp; inputs</h3>
+        <div class="r-step"><span class="r-pill dot">Step 2</span><span>Step 2 of 4 · 50%</span></div>
+        <div class="r-bar"><i style="width:50%"></i></div>
+        <label class="r-field-l">Email or Mobile Number</label>
+        <div class="r-input"><i class="ti ti-mail"></i>e.g. name@example.com</div>
+        <div class="r-seg"><span class="on"><i class="ti ti-circle-check"></i> Option A</span><span><i class="ti ti-circle"></i> Option B</span></div>
+      </div>
+
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Cards &amp; choices</h3>
+        <div class="r-tiles">
+          <div class="r-tile"><div class="r-ic"><i class="ti ti-qrcode"></i></div><span class="r-dot"></span><b>Visitor Passes</b><small>Invite a guest</small></div>
+          <div class="r-tile"><div class="r-ic"><i class="ti ti-swimming"></i></div><span class="r-tag">Book</span><b>Facilities</b><small>Pool &amp; courts</small></div>
+        </div>
+        <div class="r-options">
+          <div class="r-opt"><div class="r-ic"><i class="ti ti-bucket-droplet"></i></div><div><b>Option</b><small>Description</small></div></div>
+          <div class="r-opt on"><div class="r-ic"><i class="ti ti-shield"></i></div><div><b>Selected</b><small>Description</small></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="band" id="outcomes">
+  <div class="wrap">
+    <div class="band-head">
+      <div class="num">07 — Outcomes</div>
+      <h2>What success looks like.</h2>
+      <p>These are the targets the experience is designed around. We'll measure them as Renigo rolls out to more communities.</p>
+    </div>
+    <div class="metrics">
+      <div class="card metric"><div class="target">Target</div><div class="val">&lt;30s</div><div class="what">To send a visitor pass</div><p>From the home screen to a pass the guest can show at the gate.</p></div>
+      <div class="card metric"><div class="target">Target</div><div class="val">3 taps</div><div class="what">To book a facility</div><p>Pick a day, pick a slot, confirm. No trip to the admin office.</p></div>
+      <div class="card metric"><div class="target">Target</div><div class="val">0</div><div class="what">Gate calls for invited guests</div><p>Guards verify the QR pass instead of phoning the resident.</p></div>
+    </div>
+
+    <div class="band-head" style="margin:96px 0 28px">
+      <div class="num">08 — What's next</div>
+      <h2>Beyond the village.</h2>
+    </div>
+    <p style="max-width:680px">Everything in the key flows above is already live. The next step is taking Renigo beyond the single village, and making the gate smarter.</p>
+
+    <h3 class="next-group"><i class="ti ti-building-community"></i> More kinds of communities</h3>
+    <div class="next three">
+      <div class="card"><div class="ic"><i class="ti ti-building-skyscraper"></i></div><h3>Condominiums</h3><p>Towers, floors and units instead of blocks and lots, with amenities like lobbies, lifts and parking levels that work the way condo associations already run them.</p></div>
+      <div class="card"><div class="ic"><i class="ti ti-map-pins"></i></div><h3>Multi-community</h3><p>One account for residents and managers who belong to more than one community, with a quick switcher instead of separate logins.</p></div>
+      <div class="card"><div class="ic"><i class="ti ti-stack-2"></i></div><h3>Multi-tenancy</h3><p>Each homeowners' association gets its own isolated workspace, data and branding on a single shared platform, so new communities can be onboarded without new builds.</p></div>
+    </div>
+
+    <h3 class="next-group"><i class="ti ti-shield-check"></i> Smarter security</h3>
+    <div class="next">
+      <div class="card"><div class="ic"><i class="ti ti-scan"></i></div><h3>Automatic plate recognition</h3><p>Gate cameras read plate numbers and match them against registered and visitor vehicles, so residents drive through and unregistered cars are flagged to the guard.</p></div>
+      <div class="card"><div class="ic"><i class="ti ti-urgent"></i></div><h3>Real-time incident alerts</h3><p>Incidents are raised by guards and residents, or detected by cameras, and pushed instantly to the right people, from the affected household to the whole community.</p></div>
+    </div>
+
+    <div class="reflection" style="margin-top:96px">
+      <div class="num">09 — Reflection</div>
+      <blockquote style="margin-top:14px">The hardest part wasn't any single screen. It was deciding what a household is, and who in it gets to do what.</blockquote>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Renigo case study · © Xkye Solutions</span>
+    <a href="prototype.html" target="_blank" rel="noopener">Open the full-screen prototype →</a>
+  </div>
+</footer>
+
+<script>
+  const frame = document.getElementById('proto');
+  const holder = document.getElementById('phoneHolder');
+  let last = '';
+
+  function goto(json) {
+    if (!json || json === last) return;
+    last = json;
+    frame.contentWindow?.postMessage({ type: 'renigo:goto', ...JSON.parse(json) }, '*');
+  }
+
+  // Scale the sticky phone to fit the viewport height
+  function fit() {
+    // The phone itself is 844px tall inside a 940px frame that leaves room for its shadow
+    const s = Math.min(1, (window.innerHeight - 64 - 40) / 900);
+    holder.style.transform = `scale(${s})`;
+    holder.style.margin = `${-(940 * (1 - s)) / 2}px ${-(480 * (1 - s)) / 2}px`;
+  }
+  fit(); addEventListener('resize', fit);
+
+  // Drive the phone from whichever chapter sits in the middle of the viewport
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) goto(e.target.dataset.goto); });
+  }, { rootMargin: '-45% 0px -45% 0px' });
+  document.querySelectorAll('section.chapter[data-goto]').forEach(s => io.observe(s));
+  // If the iframe finishes loading after a chapter is already active, replay it
+  frame.addEventListener('load', () => { const j = last; last = ''; goto(j); });
+
+  // "Try it" buttons always re-trigger, even if the chapter is already active
+  document.querySelectorAll('.try').forEach(b => b.addEventListener('click', () => {
+    last = '';
+    goto(b.dataset.goto);
+    if (getComputedStyle(document.querySelector('.stage')).display === 'none') {
+      const inline = document.querySelector('.inline-phone iframe');
+      inline.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      inline.contentWindow?.postMessage({ type: 'renigo:goto', ...JSON.parse(b.dataset.goto) }, '*');
+    }
+  }));
+
+
+
+  // Nav state
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 8), { passive: true });
+</script>
+</body>
+</html>
