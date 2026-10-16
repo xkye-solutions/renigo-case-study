@@ -1,0 +1,1330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Renigo Prototype</title>
+<link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/brand/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Renigo design system (in progress) */
+    --bg: #F0FCE0;      /* lime canvas */
+    --fill: #ECF8DC;    /* input fill */
+    --leaf: #E4F0D4;    /* leaf surface */
+    --lime: #D0E898;    /* lime accent */
+    --olive: #4C6810;
+    --deep: #384C00;
+    --ink: #141C0C;
+    --muted: #585C50;
+    --faint: #8A8E84;
+    --line: #E4F0D4;
+    --card: #FFFFFF;
+    --amber-bg: #FBEFD2; --amber: #8A6510;
+    --red-bg: #FDE7E4;   --red: #C8423A;
+    --r: 20px;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Manrope", Arial, sans-serif;
+    color: var(--ink); background: #dfe8d6;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased;
+  }
+  body::before { content: ""; position: fixed; inset: -40px; z-index: -1; background: url("assets/images/renigo-bg.png") center / cover no-repeat; filter: blur(18px) saturate(.85) brightness(1.08); }
+  body::after { content: ""; position: fixed; inset: 0; z-index: -1; background: rgba(240, 245, 236, .35); }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; padding: 0; }
+  input, select, textarea { font: inherit; color: inherit; }
+  i.ti { line-height: 1; }
+
+  /* ---------- Phone frame ---------- */
+  .phone { width: 390px; height: 844px; border-radius: 56px; padding: 12px; background: #111; box-shadow: 0 40px 80px rgba(0,0,0,.35), inset 0 0 0 2px #333; position: relative; flex-shrink: 0; }
+  .island { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; background: #000; border-radius: 20px; z-index: 90; }
+  .device { width: 100%; height: 100%; border-radius: 44px; overflow: hidden; background: var(--bg); position: relative; }
+  .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 34px; font-weight: 600; font-size: 15px; z-index: 80; pointer-events: none; transition: color .3s; }
+  .statusbar.light { color: #fff; }
+  .statusbar .sb-icons { display: flex; gap: 4px; align-items: center; font-size: 17px; }
+  @media (max-width: 440px) {
+    body { align-items: stretch; }
+    .phone { width: 100%; height: 100dvh; border-radius: 0; padding: 0; box-shadow: none; }
+    .island { display: none; }
+    .device { border-radius: 0; }
+  }
+  html.embed body { background: transparent; min-height: 0; height: 100%; align-items: center; }
+  html.embed body::before, html.embed body::after { display: none; }
+  html.embed .phone { width: 390px; height: 844px; border-radius: 56px; padding: 12px; box-shadow: 0 24px 40px rgba(20,40,25,.22), inset 0 0 0 2px #333; }
+  html.embed .island { display: block; }
+  html.embed .device { border-radius: 44px; }
+
+  .to-case { position: fixed; top: 20px; left: 20px; z-index: 5; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: rgba(255,255,255,.88); backdrop-filter: blur(10px); color: var(--deep); font-size: 14px; font-weight: 600; text-decoration: none; box-shadow: 0 6px 18px rgba(30,50,10,.12); transition: transform .15s; }
+  .to-case:hover { transform: translateX(-2px); }
+  html.embed .to-case { display: none; }
+  @media (max-width: 440px) { .to-case { display: none; } }
+
+  /* ---------- Screen scaffolding ---------- */
+  .screen { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: 50px; }
+  .screen.enter { animation: slideIn .34s var(--ease); }
+  .screen.back { animation: slideBack .3s var(--ease); }
+  .screen.fade { animation: fadeIn .3s ease; }
+  @keyframes slideIn { from { transform: translateX(28%); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes slideBack { from { transform: translateX(-12%); opacity: .4; } to { transform: none; opacity: 1; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes rise { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .content { flex: 1; overflow-y: auto; padding: 4px 16px 28px; scrollbar-width: none; }
+  .content::-webkit-scrollbar { display: none; }
+  .content > * { animation: rise .45s var(--ease) both; }
+  .content > *:nth-child(2) { animation-delay: .03s; } .content > *:nth-child(3) { animation-delay: .06s; }
+  .content > *:nth-child(4) { animation-delay: .09s; } .content > *:nth-child(5) { animation-delay: .12s; }
+  .content > *:nth-child(n+6) { animation-delay: .15s; }
+  .footer { padding: 12px 16px 26px; display: flex; flex-direction: column; gap: 10px; background: linear-gradient(rgba(240,252,224,0), var(--bg) 26%); }
+
+  /* Root header */
+  .hdr { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 10px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .mark { width: 34px; height: 34px; display: block; }
+  .brand b { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+  .hdr-r { display: flex; gap: 8px; align-items: center; }
+  .round { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; position: relative; transition: transform .15s; }
+  .round:active { transform: scale(.92); }
+  .round.soft { background: rgba(255,255,255,.7); }
+  .pip { position: absolute; top: 8px; right: 9px; width: 9px; height: 9px; border-radius: 50%; background: #5DBB2E; border: 2px solid var(--bg); }
+
+  /* Sub-page header */
+  .bk { display: flex; align-items: center; gap: 10px; margin: 2px 0 10px; }
+  .bk button { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; margin-left: -8px; font-size: 22px; }
+  .bk button:active { background: var(--leaf); }
+  .eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--olive); }
+  .h1 { font-size: 27px; font-weight: 600; letter-spacing: -.02em; margin: 0 0 6px; line-height: 1.15; }
+  .lead { font-size: 14px; color: var(--muted); margin: 0 0 18px; line-height: 1.5; }
+
+  /* Cards & sections */
+  .card { background: var(--card); border-radius: var(--r); padding: 16px; box-shadow: 0 1px 2px rgba(30,50,10,.03), 0 6px 18px rgba(30,50,10,.04); }
+  .card + .card, .stack > * + * { margin-top: 12px; }
+  .sec { display: flex; align-items: center; justify-content: space-between; margin: 24px 2px 12px; }
+  .sec h2 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .sec .link { font-size: 13px; font-weight: 600; color: var(--olive); }
+  .card-h { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+  .card-h > i { font-size: 22px; color: var(--deep); margin-top: 1px; }
+  .card-h b { font-size: 17px; font-weight: 600; display: block; }
+  .card-h small { font-size: 12.5px; color: var(--muted); }
+  .card-h .grow { flex: 1; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; }
+  .hint { font-size: 12.5px; color: var(--faint); margin: 8px 2px 0; line-height: 1.45; }
+
+  /* Pills */
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; background: var(--leaf); color: var(--deep); }
+  .pill.lime { background: var(--lime); }
+  .pill.amber { background: var(--amber-bg); color: var(--amber); }
+  .pill.red { background: var(--red-bg); color: var(--red); }
+  .pill.grey { background: #EEF0EA; color: var(--muted); }
+  .pill.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .pill.mono { font-family: ui-monospace, Menlo, monospace; font-weight: 500; font-size: 11.5px; border-radius: 6px; padding: 3px 7px; }
+
+  /* Buttons */
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 52px; padding: 0 18px; border-radius: 16px; background: var(--deep); color: var(--bg); font-weight: 700; font-size: 16px; box-shadow: 0 8px 18px rgba(56,76,0,.22); transition: transform .12s, background .2s, box-shadow .2s; }
+  .btn:active { transform: scale(.98); background: var(--ink); box-shadow: 0 4px 10px rgba(56,76,0,.2); }
+  .btn i { font-size: 20px; }
+  .btn.soft { background: var(--leaf); color: var(--deep); box-shadow: none; }
+  .btn.white { background: #fff; color: var(--ink); box-shadow: none; }
+  .btn.dark { background: #283020; box-shadow: none; }
+  .btn.ghost { background: transparent; color: var(--deep); box-shadow: none; height: 44px; }
+  .btn.danger { background: transparent; color: var(--red); box-shadow: none; height: 44px; font-size: 14px; }
+  .btn.sm { height: 38px; width: auto; padding: 0 16px; font-size: 13.5px; border-radius: 12px; box-shadow: none; }
+  .btn.loading { pointer-events: none; }
+  .btn.loading::after { content: ""; width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Inputs */
+  .field { margin-bottom: 14px; }
+  .field > label, .lbl { display: flex; justify-content: space-between; font-size: 13.5px; font-weight: 500; margin-bottom: 8px; }
+  .field > label em, .lbl em { font-style: normal; color: var(--olive); font-weight: 600; font-size: 12px; }
+  .inp { display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 14px; border-radius: 14px; background: var(--fill); border: 1.5px solid transparent; transition: border-color .15s, background .15s; }
+  .inp:focus-within { border-color: var(--olive); background: #fff; }
+  .inp.err { border-color: var(--red); background: #fff; animation: shake .3s; }
+  @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  .inp > i { font-size: 20px; color: var(--muted); }
+  .inp input, .inp select { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 15px; height: 100%; }
+  .inp input::placeholder, textarea::placeholder { color: #A3A89C; }
+  .inp select { appearance: none; cursor: pointer; }
+  textarea.ta { width: 100%; min-height: 92px; resize: none; border-radius: 14px; background: var(--fill); border: 1.5px solid transparent; padding: 13px 14px; font-size: 15px; outline: 0; }
+  textarea.ta:focus { border-color: var(--olive); background: #fff; }
+  .card .inp, .card textarea.ta { background: var(--fill); }
+
+  /* Option chips (2-col) */
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt { display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 13px; background: var(--leaf); color: var(--deep); font-size: 14px; font-weight: 500; transition: background .15s, color .15s, transform .12s; }
+  .opt i { font-size: 18px; }
+  .opt:active { transform: scale(.97); }
+  .opt.on { background: var(--olive); color: #fff; }
+  .opt-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .optc { display: flex; gap: 10px; align-items: center; padding: 12px; border-radius: 16px; background: #fff; border: 1.5px solid var(--line); text-align: left; transition: all .15s; }
+  .optc .ic { width: 38px; height: 38px; border-radius: 11px; background: var(--leaf); color: var(--deep); display: grid; place-items: center; font-size: 20px; flex-shrink: 0; transition: all .15s; }
+  .optc b { display: block; font-size: 14px; font-weight: 600; }
+  .optc small { font-size: 11.5px; color: var(--muted); }
+  .optc.on { background: var(--lime); border-color: var(--lime); }
+  .optc.on .ic { background: var(--olive); color: #fff; }
+  .radio { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 16px; background: #fff; border: 1.5px solid var(--line); text-align: left; width: 100%; transition: all .15s; }
+  .radio + .radio { margin-top: 10px; }
+  .radio .rb { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #9AA08F; flex-shrink: 0; margin-top: 1px; display: grid; place-items: center; }
+  .radio.on { background: var(--lime); border-color: var(--lime); }
+  .radio.on .rb { border-color: var(--deep); }
+  .radio.on .rb::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--deep); }
+  .radio b { display: block; font-size: 15px; font-weight: 600; }
+  .radio small { font-size: 12.5px; color: var(--muted); }
+
+  /* Scroll chips & segmented */
+  .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 14px; padding: 0 16px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; padding: 8px 15px; border-radius: 999px; font-size: 13px; font-weight: 500; background: var(--leaf); color: var(--deep); transition: all .15s; }
+  .chip.on { background: var(--deep); color: #fff; }
+  .seg { display: flex; padding: 4px; border-radius: 14px; background: var(--leaf); margin-bottom: 16px; position: relative; }
+  .seg button { flex: 1; height: 38px; border-radius: 11px; font-size: 13.5px; font-weight: 600; color: var(--muted); position: relative; z-index: 1; transition: color .2s; }
+  .seg button.on { color: var(--deep); }
+  .seg .thumb { position: absolute; top: 4px; bottom: 4px; border-radius: 11px; background: #fff; box-shadow: 0 2px 6px rgba(30,50,10,.08); transition: left .3s var(--ease), width .3s var(--ease); }
+
+  /* Toggle */
+  .tgl { width: 50px; height: 30px; border-radius: 999px; background: #CDD3C5; position: relative; transition: background .2s; flex-shrink: 0; }
+  .tgl::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.15); transition: transform .25s var(--ease); }
+  .tgl.on { background: var(--olive); }
+  .tgl.on::after { transform: translateX(20px); }
+  .reveal { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s var(--ease); }
+  .reveal > div { overflow: hidden; }
+  .reveal.open { grid-template-rows: 1fr; }
+
+  /* Lists */
+  .row { display: flex; align-items: center; gap: 12px; padding: 14px; width: 100%; text-align: left; }
+  .row .grow { flex: 1; min-width: 0; }
+  .row .t { font-weight: 600; font-size: 15px; }
+  .row .s { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  button.row:active, button.card:active { transform: scale(.985); }
+  button.card { width: 100%; text-align: left; transition: transform .12s; display: block; }
+  button.card.row { display: flex; }
+  .tight .t, .tight .s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .list > * + * { margin-top: 10px; }
+  .sq { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; background: var(--leaf); color: var(--deep); font-size: 22px; flex-shrink: 0; }
+  .sq.entry { background: var(--lime); }
+  .sq.exit { background: var(--amber-bg); color: var(--amber); }
+  .divide > * + * { border-top: 1px solid var(--line); }
+
+  .avatar { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; color: #fff; flex-shrink: 0; font-size: 15px; overflow: hidden; position: relative; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .av-wrap { position: relative; flex-shrink: 0; }
+  .av-dot { position: absolute; right: -1px; bottom: -1px; width: 15px; height: 15px; border-radius: 50%; border: 2.5px solid #fff; }
+
+  /* Home */
+  .welcome { display: flex; justify-content: space-between; align-items: flex-end; margin: 14px 2px 16px; }
+  .welcome small { font-size: 14px; color: var(--muted); }
+  .welcome h1 { margin: 2px 0 0; font-size: 28px; font-weight: 600; letter-spacing: -.02em; }
+  .key { padding: 16px; }
+  .key-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .key-top .sq { border-radius: 50%; }
+  .key-top b { display: block; font-size: 16px; font-weight: 600; }
+  .key-top small { font-size: 12.5px; color: var(--muted); }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { background: #fff; border-radius: 18px; padding: 14px; text-align: left; position: relative; box-shadow: 0 1px 2px rgba(30,50,10,.03), 0 6px 18px rgba(30,50,10,.04); transition: transform .12s; }
+  .tile:active { transform: scale(.97); }
+  .tile > i { font-size: 26px; color: var(--olive); }
+  .tile b { display: block; font-size: 15.5px; font-weight: 600; margin-top: 16px; }
+  .tile small { font-size: 12px; color: var(--muted); }
+  .tile .badge { position: absolute; top: 14px; right: 12px; font-size: 11.5px; font-weight: 600; color: var(--olive); }
+  .tile .badge.tag { background: var(--leaf); padding: 2px 7px; border-radius: 6px; }
+  .tile .badge.live::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--olive); }
+  .news { overflow: hidden; padding: 0; }
+  /* Card and article share one aspect ratio so the photo is cropped the same way in both */
+  .news .img, .news-img { aspect-ratio: 2.2 / 1; overflow: hidden; }
+  .news .img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s var(--ease); }
+  .news:active .img img { transform: scale(1.04); }
+  .news .body { padding: 14px 16px 16px; }
+  .news .meta { display: flex; justify-content: space-between; font-size: 11.5px; }
+  .news .meta b { font-weight: 600; letter-spacing: .08em; color: var(--olive); }
+  .news h3 { font-size: 17px; font-weight: 600; margin: 8px 0 6px; line-height: 1.3; }
+  .news p { font-size: 13.5px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+  /* Facilities */
+  .fac { padding: 0; overflow: hidden; }
+  .fac .img { height: 136px; position: relative; }
+  .fac .img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .fac .img .pill { position: absolute; left: 12px; top: 12px; background: rgba(255,255,255,.92); }
+  .fac .info { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 14px; gap: 10px; }
+  .fac .info b { font-size: 16px; font-weight: 600; }
+  .days { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -20px; padding: 0 20px; }
+  .days::-webkit-scrollbar { display: none; }
+  .day { flex-shrink: 0; width: 56px; padding: 10px 0; border-radius: 15px; background: var(--fill); text-align: center; transition: all .15s; }
+  .day b { display: block; font-size: 18px; margin-top: 2px; font-weight: 600; }
+  .day span { font-size: 12px; color: var(--muted); }
+  .day.on { background: var(--olive); color: #fff; }
+  .day.on span { color: var(--lime); }
+  .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .slot { padding: 11px 0; border-radius: 12px; background: var(--fill); font-size: 13px; font-weight: 500; text-align: center; transition: all .15s; }
+  .slot.on { background: var(--olive); color: #fff; }
+  .slot:disabled { color: #B7BBB0; background: #F3F5EF; text-decoration: line-through; cursor: not-allowed; }
+  .stepper { display: flex; align-items: center; gap: 14px; }
+  .stepper button { width: 40px; height: 40px; border-radius: 12px; background: var(--leaf); font-size: 18px; display: grid; place-items: center; }
+  .stepper b { min-width: 22px; text-align: center; font-size: 17px; }
+
+  /* Schedule bits */
+  .time2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tbox { background: var(--fill); border-radius: 14px; padding: 12px 14px; position: relative; }
+  .tbox small { font-size: 11.5px; color: var(--muted); font-weight: 500; display: block; }
+  .tbox input { border: 0; background: transparent; font-size: 19px; font-weight: 600; width: 100%; outline: 0; padding: 4px 0 0; }
+  .weekdays { display: flex; gap: 6px; }
+  .wd { flex: 1; height: 50px; border-radius: 12px; background: var(--leaf); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: var(--deep); transition: all .15s; }
+  .wd small { font-size: 8.5px; font-weight: 600; opacity: .7; }
+  .wd.on { background: var(--olive); color: #fff; }
+  .window { margin-top: 12px; background: var(--fill); border-radius: 14px; padding: 12px 14px; }
+  .window .top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--deep); }
+  .wbar { position: relative; height: 10px; border-radius: 5px; background: var(--leaf); margin: 12px 0 6px; }
+  .wbar i { position: absolute; top: 0; bottom: 0; background: var(--olive); border-radius: 5px; transition: left .3s var(--ease), width .3s var(--ease); }
+  .window .ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+  /* Progress */
+  .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; font-weight: 500; color: var(--deep); }
+  .pbar { height: 7px; border-radius: 4px; background: var(--leaf); overflow: hidden; margin-bottom: 18px; }
+  .pbar i { display: block; height: 100%; background: var(--deep); border-radius: 4px; transition: width .5s var(--ease); }
+
+  /* Pass card */
+  .pass { background: var(--deep); color: #fff; border-radius: 24px; overflow: hidden; box-shadow: 0 18px 36px rgba(56,76,0,.3); position: relative; }
+  .pass::before { content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%; right: -90px; top: -90px; background: radial-gradient(rgba(208,232,152,.22), transparent 70%); }
+  .pass-h { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,.06); font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .pass-h span { display: flex; gap: 8px; align-items: center; }
+  .pass-b { padding: 16px; position: relative; }
+  .pass .who { display: flex; justify-content: space-between; gap: 12px; }
+  .pass .who small { display: block; font-size: 10.5px; letter-spacing: .08em; color: var(--lime); font-weight: 600; text-transform: uppercase; }
+  .pass .who b { display: block; font-size: 21px; font-weight: 600; margin-top: 3px; }
+  .pass .who span { font-size: 12.5px; color: #D6E2BF; }
+  .pass .win { display: flex; align-items: center; gap: 10px; margin: 14px 0; padding: 12px; border-radius: 14px; background: rgba(255,255,255,.08); }
+  .pass .win i { font-size: 22px; color: var(--lime); }
+  .pass .win small { font-size: 11.5px; color: #C9D6B1; display: block; }
+  .pass .win b { font-size: 15px; font-weight: 600; }
+  .qrbox { background: #fff; border-radius: 18px; padding: 16px; text-align: center; color: var(--ink); }
+  .qrbox .qr { width: 168px; height: 168px; margin: 0 auto 10px; }
+  .qrbox small { font-size: 12px; color: var(--muted); }
+  .scanline { position: relative; overflow: hidden; }
+  .scanline::after { content: ""; position: absolute; left: 8%; right: 8%; height: 2px; background: linear-gradient(90deg, transparent, var(--olive), transparent); animation: scan 2.4s ease-in-out infinite; }
+  @keyframes scan { 0%, 100% { top: 6%; } 50% { top: 90%; } }
+  .codebox { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.08); }
+  .codebox small { display: block; font-size: 11.5px; color: #C9D6B1; }
+  .codebox b { font-size: 22px; letter-spacing: .12em; font-weight: 700; }
+  .copy { display: inline-flex; gap: 6px; align-items: center; padding: 7px 12px; border-radius: 10px; background: #fff; color: var(--deep); font-size: 13px; font-weight: 600; }
+  .pass-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .pass-actions .btn { height: 46px; font-size: 14px; border-radius: 14px; }
+  .pass-actions .btn.glass { background: rgba(255,255,255,.12); color: #fff; box-shadow: none; }
+  .notch { position: relative; border-top: 2px dashed rgba(255,255,255,.18); margin: 0 18px; }
+  .notch::before, .notch::after { content: ""; position: absolute; top: -12px; width: 22px; height: 22px; border-radius: 50%; background: var(--bg); }
+  .notch::before { left: -30px; } .notch::after { right: -30px; }
+
+  .banner { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 18px; background: var(--lime); }
+  .banner .sq { background: var(--olive); color: #fff; border-radius: 50%; }
+  .banner small { font-size: 11px; letter-spacing: .08em; font-weight: 700; color: var(--deep); }
+  .banner b { display: block; font-size: 16px; font-weight: 600; margin: 2px 0; }
+  .banner p { margin: 0; font-size: 13px; color: #3C4A1C; }
+  .notice { display: flex; gap: 12px; padding: 14px; border-radius: 18px; background: var(--leaf); font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .notice .sq { background: var(--olive); color: #fff; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; }
+  .notice b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 2px; }
+
+  /* Staff */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  .stat { background: var(--fill); border-radius: 14px; padding: 10px 6px; text-align: center; }
+  .stat b { display: block; font-size: 20px; font-weight: 700; }
+  .stat small { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+  .staff .sched { background: var(--fill); border-radius: 14px; padding: 12px; margin: 12px 0; }
+  .staff .sched .when { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+  .zones { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .zone { font-size: 11.5px; padding: 4px 8px; border-radius: 8px; background: #fff; border: 1px solid var(--line); color: var(--muted); }
+  .staff-f { display: flex; justify-content: space-between; align-items: center; }
+  .staff-f .link { font-size: 13.5px; font-weight: 600; color: var(--deep); display: flex; align-items: center; gap: 2px; }
+
+  /* Profile */
+  .prof { text-align: left; }
+  .prof .top { display: flex; gap: 14px; align-items: center; }
+  .verified { position: absolute; right: -2px; bottom: -2px; width: 24px; height: 24px; border-radius: 50%; background: var(--olive); color: #fff; display: grid; place-items: center; border: 2.5px solid #fff; font-size: 13px; }
+  .prof h2 { margin: 0; font-size: 22px; font-weight: 600; }
+  .prof .role { font-size: 13px; color: var(--olive); font-weight: 600; }
+  .contact { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--fill); font-size: 14px; margin-top: 8px; }
+  .contact .grow { flex: 1; }
+
+  /* Login */
+  .login { padding-top: 0; background: var(--bg); }
+  .login .hero { height: 300px; position: relative; overflow: hidden; flex-shrink: 0; }
+  .login .hero img { width: 100%; height: 100%; object-fit: cover; }
+  .login .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(20,28,12,.18), rgba(240,252,224,.62) 46%, var(--bg) 90%); }
+  .login .mark { position: absolute; left: 0; right: 0; top: 104px; text-align: center; z-index: 2; }
+  .login .mark .lockup { display: inline-flex; align-items: center; gap: 10px; padding: 14px 18px; border-radius: 22px; background: var(--bg); box-shadow: 0 10px 30px rgba(20,28,12,.18); }
+  .login .mark .lockup img { height: 38px; display: block; }
+  .login .mark .tag { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; padding: 4px 8px; border-radius: 999px; background: var(--lime); color: var(--deep); }
+  .login .mark p { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: #2E3A18; text-shadow: 0 1px 10px rgba(240,252,224,.95); }
+  .login .panel { flex: 1; margin: -64px 14px 0; position: relative; z-index: 3; overflow-y: auto; scrollbar-width: none; padding-bottom: 20px; }
+  .or { display: flex; align-items: center; gap: 12px; margin: 14px 0; font-size: 12px; color: var(--faint); font-weight: 600; }
+  .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .faceid { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; border-radius: 16px; background: var(--leaf); color: var(--deep); }
+  .faceid i { font-size: 26px; }
+  .faceid b { display: block; font-size: 14.5px; }
+  .faceid small { font-size: 12px; color: var(--muted); }
+  .scan-overlay { position: absolute; inset: 0; z-index: 70; background: rgba(20,28,12,.55); backdrop-filter: blur(6px); display: grid; place-items: center; animation: fadeIn .2s; }
+  .scan-overlay .box { width: 140px; height: 140px; border-radius: 34px; background: rgba(255,255,255,.12); display: grid; place-items: center; color: #fff; font-size: 64px; }
+  .scan-overlay .box.ok { background: var(--olive); }
+  .scan-overlay p { color: #fff; text-align: center; font-weight: 600; margin-top: 14px; }
+
+  /* Bottom nav */
+  .tabbar { display: flex; justify-content: space-around; padding: 8px 6px 24px; background: rgba(244,252,234,.86); backdrop-filter: blur(16px); border-top: 1px solid rgba(208,232,152,.6); }
+  .tabbar button { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 500; color: var(--muted); width: 66px; }
+  .tabbar button .ico { width: 48px; height: 30px; border-radius: 999px; display: grid; place-items: center; font-size: 22px; transition: background .25s; }
+  .tabbar button.on { color: var(--deep); font-weight: 700; }
+  .tabbar button.on .ico { background: var(--lime); }
+
+  /* Sheets, toast, menus */
+  .scrim { position: absolute; inset: 0; background: rgba(20,28,12,.38); z-index: 60; animation: fadeIn .2s; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 28px 28px 0 0; padding: 8px 20px 32px; z-index: 61; max-height: 88%; overflow-y: auto; animation: up .34s var(--ease); scrollbar-width: none; }
+  .sheet.dragging { transition: none; }
+  .sheet.closing { transition: transform .22s ease-in; }
+  .sheet .grab { width: 100%; height: 22px; display: grid; place-items: center; cursor: grab; touch-action: none; margin-bottom: 4px; }
+  .sheet .grab::before { content: ""; width: 42px; height: 5px; border-radius: 3px; background: #DCE2D3; }
+  .sheet h3 { margin: 0 0 4px; font-size: 20px; font-weight: 600; }
+  @keyframes up { from { transform: translateY(100%); } to { transform: none; } }
+  .toast { position: absolute; left: 50%; bottom: 112px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 16px; font-size: 14px; font-weight: 500; z-index: 85; display: flex; gap: 8px; align-items: center; white-space: nowrap; animation: toast 2.4s forwards; }
+  .toast i { color: var(--lime); font-size: 18px; }
+  @keyframes toast { 0% { opacity: 0; transform: translate(-50%, 12px) scale(.96); } 10%, 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+  .empty { text-align: center; padding: 34px 16px; color: var(--muted); font-size: 13.5px; }
+  .empty .sq { margin: 0 auto 12px; width: 56px; height: 56px; border-radius: 18px; font-size: 26px; }
+  .empty b { display: block; color: var(--ink); font-size: 15.5px; margin-bottom: 4px; }
+  .success { text-align: center; padding-top: 40px; }
+  .success .ring { width: 96px; height: 96px; border-radius: 50%; background: var(--lime); display: grid; place-items: center; margin: 0 auto 18px; animation: pop .5s var(--ease); }
+  .success .ring i { font-size: 46px; color: var(--deep); }
+  @keyframes pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: none; opacity: 1; } }
+  .kv { display: flex; justify-content: space-between; padding: 11px 0; font-size: 14px; }
+  .kv span { color: var(--muted); }
+  .kv b { font-weight: 600; text-align: right; }
+</style>
+</head>
+<body>
+  <a class="to-case" href="index.html"><i class="ti ti-arrow-left"></i> Back to case study</a>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="device" id="device">
+      <div class="statusbar" id="statusbar">
+        <span id="clock">9:41</span>
+        <span class="sb-icons"><i class="ti ti-antenna-bars-5"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-4" style="font-size:22px"></i></span>
+      </div>
+      <div id="app"></div>
+    </div>
+  </div>
+
+<script>
+const EMBED = window.self !== window.top;
+if (EMBED) document.documentElement.classList.add('embed');
+
+/* ================= Helpers ================= */
+const ic = (n, s) => `<i class="ti ti-${n}"${s ? ` style="font-size:${s}px"` : ''} aria-hidden="true"></i>`;
+const img = (f, alt = '') => `<img src="assets/images/${f}" alt="${alt}" loading="lazy" />`;
+const PHOTOS = {
+  'John Lagumbay': 'renigo-jm.jpg', 'Paul Lagumbay': 'renigo-jp.jpg',
+  'Jay Are Galinada': 'renigo-jag.jpg', 'Zane Hipolito': 'renigo-zane.jpg',
+};
+const SHADES = ['#4C6810', '#384C00', '#5C702C', '#6B7A3A', '#3F5A1E'];
+const initials = n => n.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
+const shade = n => SHADES[[...n].reduce((a, c) => a + c.charCodeAt(0), 0) % SHADES.length];
+const avatar = (n, size = 46) => `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${Math.round(size / 3)}px;background:${shade(n)}">${PHOTOS[n] ? img(PHOTOS[n], n) : initials(n)}</div>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const today = new Date();
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const asDate = s => new Date(s + 'T00:00');
+const fmtShort = d => d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+const fmtDay = d => d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+const fmtTime = d => d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+const t12 = hm => { const [h, m] = hm.split(':').map(Number); return `${(h % 12) || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; };
+const relDay = s => s === iso(today) ? 'Today' : s === iso(addDays(today, 1)) ? 'Tomorrow' : fmtShort(asDate(s));
+const rnd = (a, b) => Math.floor(a + Math.random() * (b - a));
+
+/* ================= Data ================= */
+const S = {
+  user: { name: 'John Lagumbay', unit: 'Block 12 · Unit 3A', email: 'john.lagumbay@example.com', phone: '+63 917 555 0118' },
+  unread: true,
+  facilities: [
+    { id: 'pool', name: 'Swimming Pool', cat: 'Sports', hours: '6:00 AM – 6:00 PM', img: 'renigo-swimming-pool.jpg', slots: ['6:00 AM', '8:00 AM', '10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'] },
+    { id: 'func', name: 'Function Room', cat: 'Function Rooms', hours: '8:00 AM – 10:00 PM', img: 'renigo-function-room.jpg', slots: ['8:00 AM', '11:00 AM', '2:00 PM', '5:00 PM', '8:00 PM'] },
+    { id: 'bbq', name: 'BBQ Pavilion', cat: 'Recreation', hours: '8:00 AM – 10:00 PM', img: 'renigo-pavilion.jpg', slots: ['10:00 AM', '1:00 PM', '4:00 PM', '7:00 PM'] },
+    { id: 'tennis', name: 'Tennis Court', cat: 'Sports', hours: '7:00 AM – 10:00 PM', img: 'renigo-tennis-court.jpg', slots: ['7:00 AM', '9:00 AM', '11:00 AM', '3:00 PM', '5:00 PM', '7:00 PM'] },
+  ],
+  bookings: [{ id: 1, fac: 'tennis', date: iso(addDays(today, 2)), slot: '5:00 PM', guests: 2, status: 'Confirmed' }],
+  passes: [
+    { id: 'VP-48213', name: 'Maria Santos', phone: '+63 917 555 0142', purpose: 'Family', date: iso(today), from: '18:00', to: '22:00', vehicle: { plate: 'NBC 4421', model: 'Toyota Vios' }, bay: 'V-04', pin: '849-201', status: 'live' },
+    { id: 'VP-48190', name: 'Carlo Reyes', phone: '+63 918 555 0177', purpose: 'Friend', date: iso(addDays(today, 1)), from: '14:00', to: '17:00', vehicle: null, pin: '312-664', status: 'live' },
+    { id: 'VP-47790', name: 'LBC Express', phone: '+63 918 555 0199', purpose: 'Delivery', date: iso(addDays(today, -3)), from: '10:00', to: '11:00', vehicle: null, pin: '550-118', status: 'used' },
+  ],
+  staff: [
+    { id: 'STF-041', name: 'Jay Are Galinada', role: 'Gardener', cat: 'Grounds', days: 'Mon, Wed, Fri', hours: '07:00 – 15:00', zones: ['Main Gate', 'Garden', 'Service Road'], status: 'on', since: '9:12 AM' },
+    { id: 'STF-058', name: 'Zane Hipolito', role: 'Contractor · Renovation', cat: 'Contractor', days: 'Mon – Sat', hours: '08:00 – 17:00', zones: ['North Gate', 'Unit 3A'], status: 'on', since: '10:03 AM' },
+    { id: 'STF-062', name: 'Ana Reyes', role: 'Housekeeper', cat: 'Domestic', days: 'Tue, Thu', hours: '07:00 – 16:00', zones: ['Main Gate', 'Unit 3A'], status: 'scheduled', since: 'Tomorrow' },
+    { id: 'STF-070', name: 'Rico Dela Cruz', role: 'Electrician', cat: 'Contractor', days: 'On call', hours: 'As needed', zones: ['Main Gate'], status: 'off', since: '' },
+  ],
+  requests: [
+    { id: 'SR-1032', cat: 'General Maintenance', desc: 'Leaking faucet in kitchen sink', date: iso(addDays(today, -2)), status: 'In Progress' },
+    { id: 'SR-1019', cat: 'Pest Control', desc: 'Ants near the back door', date: iso(addDays(today, -9)), status: 'Completed' },
+  ],
+  vehicles: [
+    { plate: 'NFG 5673', model: 'Toyota Camry', color: 'White', slot: 'Garage · Slot 12' },
+    { plate: 'ABK 2190', model: 'Honda CR-V', color: 'Grey', slot: 'Street · Bay 4' },
+  ],
+  activeVehicle: 0,
+  household: [
+    { name: 'John Lagumbay', role: 'Owner', email: 'john.lagumbay@example.com' },
+    { name: 'Paul Lagumbay', role: 'Family Member', email: 'paul@example.com' },
+    { name: 'Chris Lim', role: 'Sub-account', email: 'chris@example.com' },
+  ],
+  news: [
+    { id: 1, tag: 'Maintenance', title: 'Swimming Pool Maintenance', body: 'The swimming pool will be closed for maintenance from 12 – 14 Aug. We apologize for the inconvenience and thank you for your patience.', when: '2 hours ago', img: 'renigo-swimming-pool.jpg', cta: 'View schedule' },
+    { id: 2, tag: 'Advisory', title: 'New Gate Access Hours', body: 'Starting next week, the North Gate will be open from 5:00 AM to 11:00 PM daily. Residents may use the Main Gate outside these hours.', when: 'Yesterday', img: 'renigo-hero.jpg', cta: 'Read more' },
+    { id: 3, tag: 'Community event', title: 'Weekend Fair at the Pavilion', body: 'Join us at the BBQ Pavilion this Saturday for food stalls, games and live music. Bring the whole family!', when: 'This Saturday · 4:00 PM', img: 'renigo-pavilion.jpg', cta: 'I\'m interested' },
+  ],
+  notifs: [
+    { t: 'Visitor arrived', b: 'Maria Santos checked in at the Main Gate.', ago: '5m', unread: true },
+    { t: 'Staff checked in', b: 'Zane Hipolito (Contractor) entered via North Gate at 10:03 AM.', ago: '1h', unread: true },
+    { t: 'Request update', b: 'SR-1032 is now In Progress. A technician is assigned.', ago: '1d', unread: false },
+  ],
+};
+
+/* ================= Router ================= */
+const R = { authed: EMBED, tab: 'home', stack: [], sub: {}, filter: 'All', staffFilter: 'all', staffQuery: '', wiz: null, anim: 'fade' };
+const app = document.getElementById('app');
+const device = document.getElementById('device');
+
+function push(name, params = {}) { R.sub = {}; R.stack.push({ name, params }); R.anim = 'enter'; render(); }
+function pop() { R.stack.pop(); R.anim = 'back'; render(); }
+function setTab(t) { if (t === R.tab && !R.stack.length) return; R.sub = {}; R.tab = t; R.stack = []; R.anim = 'fade'; render(); }
+
+function render() {
+  closeSheet(true);
+  if (!R.authed) {
+    app.innerHTML = `<div class="screen login ${R.anim}">${SCREENS.login()}</div>`;
+    document.getElementById('statusbar').classList.add('light');
+    return;
+  }
+  document.getElementById('statusbar').classList.remove('light');
+  const top = R.stack[R.stack.length - 1];
+  const name = top ? top.name : R.tab;
+  const root = !top;
+  app.innerHTML = `<div class="screen ${R.anim}">${SCREENS[name](top ? top.params : {}, root)}${root ? tabbar() : ''}</div>`;
+  R.anim = '';
+  placeSegThumbs();
+}
+
+function tabbar() {
+  const items = [['home', 'smart-home', 'Home'], ['facilities', 'swimming', 'Facilities'], ['passes', 'id-badge-2', 'Passes'], ['requests', 'headset', 'Helpdesk'], ['profile', 'user-circle', 'Profile']];
+  return `<nav class="tabbar">${items.map(([k, i, l]) =>
+    `<button class="${R.tab === k ? 'on' : ''}" data-act="tab" data-tab="${k}"><span class="ico">${ic(i)}</span>${l}</button>`).join('')}</nav>`;
+}
+
+const rootHeader = title => `
+  <header class="hdr">
+    <div class="brand"><img class="mark" src="assets/brand/renigo-icon-full-color.svg" alt="Renigo" /><b>${title}</b></div>
+    <div class="hdr-r">
+      <button class="round soft" data-act="go" data-to="notifications" aria-label="Notifications">${ic('bell', 21)}${S.unread ? '<span class="pip"></span>' : ''}</button>
+      <button class="round" data-act="tab" data-tab="profile" aria-label="Profile">${avatar(S.user.name, 38)}</button>
+    </div>
+  </header>`;
+
+const pageHead = (eyebrow, title, lead, back = true) => `
+  <div>
+    <div class="bk">${back ? `<button data-act="back" aria-label="Back">${ic('arrow-left')}</button>` : ''}<span class="eyebrow">${eyebrow}</span></div>
+    <h1 class="h1">${title}</h1>${lead ? `<p class="lead">${lead}</p>` : ''}
+  </div>`;
+
+const seg = (key, opts) => `<div class="seg" data-seg>${opts.map(([v, l]) =>
+  `<button class="${R.sub[key] === v ? 'on' : ''}" data-act="sub" data-key="${key}" data-val="${v}">${l}</button>`).join('')}<span class="thumb"></span></div>`;
+function placeSegThumbs() {
+  document.querySelectorAll('[data-seg]').forEach(s => {
+    const on = s.querySelector('button.on'), th = s.querySelector('.thumb');
+    if (on && th) { th.style.left = on.offsetLeft + 'px'; th.style.width = on.offsetWidth + 'px'; }
+  });
+}
+
+const empty = (icon, title, sub) => `<div class="empty"><div class="sq">${ic(icon)}</div><b>${title}</b>${sub}</div>`;
+
+/* ================= Derived state ================= */
+const passState = p => p.status !== 'live' ? 'past' : p.date < iso(today) ? 'past' : p.date === iso(today) ? 'active' : 'upcoming';
+const passPill = p => {
+  if (p.status === 'revoked') return '<span class="pill red">Revoked</span>';
+  if (p.status === 'used') return '<span class="pill grey">Used</span>';
+  const st = passState(p);
+  return st === 'active' ? '<span class="pill lime dot">QR Active</span>' : st === 'upcoming' ? '<span class="pill">Upcoming</span>' : '<span class="pill grey">Expired</span>';
+};
+const staffPill = s => s.status === 'on' ? `<span class="pill lime dot">On site · ${s.since}</span>` : s.status === 'scheduled' ? `<span class="pill amber dot">Scheduled · ${s.since}</span>` : '<span class="pill grey dot">Off site</span>';
+const staffDot = s => s.status === 'on' ? '#5DBB2E' : s.status === 'scheduled' ? '#D99A1E' : '#A3A89C';
+const reqPill = s => ({ 'In Progress': '<span class="pill lime">In Progress</span>', 'Pending': '<span class="pill amber">Pending</span>', 'Completed': '<span class="pill grey">Completed</span>' }[s]);
+
+/* ================= Screens ================= */
+const SCREENS = {
+  login() {
+    return `
+      <div class="hero">${img('renigo-hero.jpg', '')}</div>
+      <div class="mark"><div class="lockup"><img src="assets/brand/renigo-horizontal-full-color.svg" alt="Renigo" /><span class="tag">PORTAL</span></div><p>Homeowner &amp; Resident Portal</p></div>
+      <div class="panel">
+        <div class="card" style="padding:20px">
+          <span class="eyebrow" style="display:flex;align-items:center;gap:6px">${'<span style="width:7px;height:7px;border-radius:50%;background:var(--olive)"></span>'} Resident access</span>
+          <h1 class="h1" style="margin-top:8px">Welcome back</h1>
+          <p class="lead" style="margin-bottom:16px">Sign in to manage your home, guests and bookings.</p>
+          <form id="loginForm" autocomplete="off">
+            <div class="field"><label>Email or mobile number</label><div class="inp">${ic('mail')}<input name="user" value="${S.user.email}" /></div></div>
+            <div class="field"><label>Password <em>Forgot?</em></label><div class="inp">${ic('lock')}<input name="pw" type="password" value="password123" /><button type="button" data-act="peek" aria-label="Show password">${ic('eye', 20)}</button></div></div>
+          </form>
+          <button class="btn" id="loginBtn" data-act="login">Log in ${ic('arrow-right')}</button>
+          <div class="or">OR</div>
+          <button class="faceid" data-act="faceid">${ic('face-id')}<span style="text-align:left"><b>Sign in with Face ID</b><small>Fast, secure biometrics</small></span></button>
+        </div>
+        <p class="small muted" style="text-align:center;margin:16px 0 0">${ic('shield-check', 14)} Secured by Renigo Property Management</p>
+      </div>`;
+  },
+
+  home() {
+    const n = S.news[0];
+    const up = [
+      ...S.passes.filter(p => ['active', 'upcoming'].includes(passState(p))).map(p => ({ icon: 'id-badge-2', t: `Guest pass: ${p.name}`, s: `${relDay(p.date)}, ${t12(p.from)}${p.vehicle ? ` · Bay ${p.bay}` : ''}`, pill: passPill(p), act: `data-act="openPass" data-id="${p.id}"` })),
+      ...S.bookings.filter(b => b.status === 'Confirmed' && b.date >= iso(today)).map(b => { const f = S.facilities.find(x => x.id === b.fac); return { icon: 'swimming', t: f.name, s: `${relDay(b.date)}, ${b.slot} · ${b.guests} guests`, pill: '<span class="pill">Confirmed</span>', act: `data-act="tab" data-tab="facilities"` }; }),
+    ];
+    const onSite = S.staff.filter(s => s.status === 'on').length;
+    const open = S.requests.filter(r => r.status !== 'Completed').length;
+    const livePasses = S.passes.some(p => passState(p) === 'active');
+    const tiles = [
+      ['qrcode', 'Visitor Passes', 'Invite & track guests', livePasses ? '<span class="badge live"></span>' : '', 'data-act="go" data-to="visitors"'],
+      ['swimming', 'Facilities', 'Pool, courts & hall', '<span class="badge">Book</span>', 'data-act="tab" data-tab="facilities"'],
+      ['users', 'Household Staff', 'Helpers & contractors', `<span class="badge">${onSite} on site</span>`, 'data-act="go" data-to="workers"'],
+      ['car', 'Parking', S.vehicles[S.activeVehicle].model, `<span class="badge tag">${S.vehicles[S.activeVehicle].plate}</span>`, 'data-act="go" data-to="parking"'],
+      ['tool', 'Helpdesk', 'Repairs & concerns', open ? `<span class="badge">${open} open</span>` : '', 'data-act="tab" data-tab="requests"'],
+      ['home-2', 'Household', 'Members & access', `<span class="badge">${S.household.length} members</span>`, 'data-act="go" data-to="household"'],
+    ];
+    const h = today.getHours();
+    return `${rootHeader('Home')}
+      <div class="content">
+        <span class="pill dot">Village secure · 31°C Partly cloudy</span>
+        <div class="welcome"><div><small>${h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'},</small><h1>${S.user.name}</h1></div><span class="pill">B12 · 3A</span></div>
+        <div class="card key">
+          <div class="key-top"><span class="sq">${ic('qrcode')}</span><div style="flex:1"><b>Resident Gate Pass</b><small>Main &amp; North Gate access</small></div><span class="pill lime dot">Active</span></div>
+          <button class="btn" data-act="ownerPass" style="justify-content:flex-start;padding:0 18px">${ic('lock-open')} Show my gate pass <span style="margin-left:auto"></span>${ic('arrow-right')}</button>
+        </div>
+        <div>
+          <div class="sec"><h2>Upcoming</h2><span class="pill">${up.length} active</span></div>
+          ${up.length ? `<div class="list">${up.map(u => `<button class="card row tight" ${u.act} style="padding:12px 14px"><span class="sq">${ic(u.icon)}</span><div class="grow"><div class="t" style="font-size:14px">${u.t}</div><div class="s">${u.s}</div></div>${u.pill}</button>`).join('')}</div>`
+            : `<div class="card">${empty('ticket', 'Nothing scheduled', 'You have no upcoming visitor passes or bookings.')}</div>`}
+        </div>
+        <div>
+          <div class="sec"><h2>Manage your home</h2></div>
+          <div class="tiles">${tiles.map(([i, t, s, b, act]) => `<button class="tile" ${act}>${ic(i)}${b}<b>${t}</b><small>${s}</small></button>`).join('')}</div>
+        </div>
+        <div>
+          <div class="sec"><h2>Community news</h2><button class="link" data-act="go" data-to="announcements">See all</button></div>
+          ${newsCard(n)}
+        </div>
+      </div>`;
+  },
+
+  facilities(_, root) {
+    const cats = ['All', 'Sports', 'Function Rooms', 'Recreation'];
+    const list = S.facilities.filter(f => R.filter === 'All' || f.cat === R.filter);
+    const mine = S.bookings.filter(b => b.status === 'Confirmed' && b.date >= iso(today));
+    return `${root ? rootHeader('Facilities') : ''}
+      <div class="content">
+        ${pageHead('Amenities', 'Facilities', 'Reserve village amenities in a few taps.', !root)}
+        ${mine.length ? `<div><div class="sec" style="margin-top:4px"><h2 style="font-size:16px">Your bookings</h2></div><div class="list">${mine.map(bookingRow).join('')}</div><div style="height:18px"></div></div>` : ''}
+        <div class="chips">${cats.map(c => `<button class="chip ${R.filter === c ? 'on' : ''}" data-act="filter" data-val="${c}">${c}</button>`).join('')}</div>
+        <div class="list">${list.map(f => `
+          <div class="card fac">
+            <div class="img">${img(f.img, f.name)}<span class="pill">${f.cat}</span></div>
+            <div class="info"><div><b>${f.name}</b><div class="small muted" style="margin-top:2px">Open daily · ${f.hours}</div></div>
+            <button class="btn sm" data-act="book" data-id="${f.id}">Book</button></div>
+          </div>`).join('')}</div>
+      </div>`;
+  },
+
+  visitors() {
+    const purposes = [['users-group', 'Family'], ['user-heart', 'Friend'], ['truck-delivery', 'Delivery'], ['tool', 'Contractor'], ['confetti', 'Event'], ['dots', 'Other']];
+    const live = S.passes.filter(p => ['active', 'upcoming'].includes(passState(p))).length;
+    return `<div class="content">
+        ${pageHead('Clearance', 'Visitor Pass', 'Pre-register guests and vehicles so the gate can let them in without a phone call.')}
+        <form id="vpForm" autocomplete="off" class="stack" onsubmit="return false">
+          <div class="card">
+            <div class="card-h">${ic('id-badge-2')}<div class="grow"><b>Visitor information</b></div></div>
+            <div class="field"><label>Full name</label><div class="inp">${ic('user')}<input name="name" placeholder="Enter full name" /></div></div>
+            <div class="field" style="margin-bottom:6px"><label>Mobile number</label><div class="inp">${ic('message-2')}<input name="phone" inputmode="tel" placeholder="+63 9XX XXX XXXX" /></div>
+              <div class="hint">A pass link is sent by SMS with directions to the gate.</div></div>
+            <div class="field" style="margin:16px 0 0"><label>Purpose of visit</label>
+              <div class="opts" data-group="purpose">${purposes.map(([i, l], k) => `<button type="button" class="opt ${k === 0 ? 'on' : ''}" data-act="pick" data-val="${l}">${ic(i)} ${l}</button>`).join('')}</div>
+              <div class="reveal" id="otherPurpose"><div><div class="inp" style="margin-top:10px">${ic('pencil')}<input name="other" placeholder="e.g. Tutor, Appraiser" /></div></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h" style="margin:0;align-items:center">${ic('car')}<div class="grow"><b>Vehicle access</b><small>Assign a visitor bay and gate permit</small></div><button type="button" class="tgl" data-act="toggleVehicle" aria-label="Vehicle access"></button></div>
+            <div class="reveal" id="vehicleBox"><div><div style="height:14px"></div>
+              <div class="time2"><div class="inp">${ic('license')}<input name="plate" placeholder="Plate no." style="text-transform:uppercase" /></div><div class="inp"><input name="model" placeholder="Make / model" /></div></div>
+              <div class="tbox" style="margin-top:10px;display:flex;align-items:center;gap:12px"><span class="sq" style="background:#fff;font-weight:800;font-size:20px">P</span><div style="flex:1"><b style="font-size:16px">Visitor Bay V-0${rnd(2, 9)}</b><small>Near Main Gate</small></div><span class="pill">Auto-assigned</span></div>
+            </div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-h" style="align-items:center">${ic('calendar')}<div class="grow"><b>Visit schedule</b></div><span class="pill lime" id="hrsPill">4 hours</span></div>
+            <div class="chips" data-group="when" style="margin-bottom:12px">
+              <button type="button" class="chip on" data-act="pickDate" data-val="${iso(today)}">Today (${fmtShort(today)})</button>
+              <button type="button" class="chip" data-act="pickDate" data-val="${iso(addDays(today, 1))}">Tomorrow (${fmtShort(addDays(today, 1))})</button>
+              <button type="button" class="chip" data-act="pickDate" data-val="${iso(addDays(today, 2))}">${fmtDay(addDays(today, 2))}</button>
+            </div>
+            <div class="time2">
+              <label class="tbox"><small>Expected arrival</small><input type="time" name="from" value="18:00" data-change="hours" /></label>
+              <label class="tbox"><small>Expected departure</small><input type="time" name="to" value="22:00" data-change="hours" /></label>
+            </div>
+          </div>
+
+          <div class="notice"><span class="sq">${ic('shield-check')}</span><div><b>Gate checkpoint scan</b>Your guest shows their QR pass to the guard on duty. You'll be notified the moment they arrive.</div></div>
+        </form>
+      </div>
+      <div class="footer">
+        <button class="btn" data-act="createPass">${ic('qrcode')} Create Visitor Pass</button>
+        <button class="btn ghost" data-act="tab" data-tab="passes">${ic('history', 18)} View active &amp; upcoming passes (${live})</button>
+      </div>`;
+  },
+
+  passCreated({ id, fresh }) {
+    const p = S.passes.find(x => x.id === id);
+    const st = passState(p);
+    return `<div class="content">
+        <div class="bk"><button data-act="back" aria-label="Back">${ic('arrow-left')}</button><span class="eyebrow">Visitor pass</span></div>
+        ${fresh ? `<div class="banner"><span class="sq">${ic('check')}</span><div><small>PASS ISSUED</small><b>Visitor clearance active</b><p>Synced with the guardhouse and sent to ${esc(p.phone)}.</p></div></div><div style="height:14px"></div>` : ''}
+        <div class="pass">
+          <div class="pass-h"><span>${ic('shield-check', 16)} Renigo · Gate clearance</span>${passPill(p)}</div>
+          <div class="pass-b">
+            <div class="who"><div><small>Guest</small><b>${esc(p.name)}</b><span>${ic('users', 13)} ${p.purpose} visit</span></div><div style="text-align:right"><small>Host unit</small><b style="font-size:17px">B12 · 3A</b><span>J. Lagumbay</span></div></div>
+            <div class="win">${ic('clock')}<div style="flex:1"><small>Clearance window</small><b>${relDay(p.date)} · ${t12(p.from)} – ${t12(p.to)}</b></div>${st === 'active' ? '<span class="pill lime">Today</span>' : ''}</div>
+            <div class="qrbox"><div class="qr">${qrSvg(p.id)}</div><small>Show at the Main Gate guardhouse</small></div>
+            <div class="codebox"><div><small>Keypad PIN</small><b>${p.pin}</b></div><button class="copy" data-act="copy" data-val="${p.pin}">${ic('copy', 15)} Copy</button></div>
+          </div>
+          <div class="notch"></div>
+          <div class="pass-b" style="padding-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#D6E2BF"><span>${ic('message-2', 15)} Sent to ${esc(p.phone)}</span><button style="color:var(--lime);font-weight:600" data-act="resend">Resend SMS</button></div>
+        </div>
+        ${p.vehicle ? `<div class="card" style="margin-top:12px"><div class="time2"><div class="tbox"><small>Registered vehicle</small><b style="font-size:15px">${esc(p.vehicle.model || 'Vehicle')}</b><div class="small muted">${esc(p.vehicle.plate)}</div></div><div class="tbox"><small>Designated bay</small><b style="font-size:15px">Visitor ${p.bay}</b><div class="small muted">Near Main Gate</div></div></div></div>` : ''}
+        <div class="sec" style="margin-top:20px"><h2 style="font-size:13px;letter-spacing:.08em;color:var(--muted)">SHARE CLEARANCE</h2></div>
+        <div class="time2"><button class="btn white" data-act="share">${ic('share')} Send via app</button><button class="btn dark" data-act="wallet">${ic('wallet')} Add to Wallet</button></div>
+        <div style="height:12px"></div>
+        <button class="btn" data-act="tab" data-tab="passes">${ic('list-details')} View all passes</button>
+        <div style="height:6px"></div>
+        <button class="btn ghost" data-act="newPass">${ic('circle-plus', 18)} Create another pass</button>
+        ${p.status === 'live' ? `<button class="btn danger" data-act="revoke" data-id="${p.id}">${ic('ban', 16)} Revoke clearance</button>` : ''}
+      </div>`;
+  },
+
+  passes(_, root) {
+    R.sub.ps ??= 'active';
+    const groups = { active: [], upcoming: [], past: [] };
+    S.passes.forEach(p => groups[passState(p)].push(p));
+    const list = groups[R.sub.ps];
+    return `${root ? rootHeader('Passes') : ''}
+      <div class="content">
+        ${pageHead('Clearance', 'Visitor Passes', 'Everyone you\'ve invited, and when they can come in.', !root)}
+        ${seg('ps', [['active', `Active (${groups.active.length})`], ['upcoming', `Upcoming (${groups.upcoming.length})`], ['past', 'Past']])}
+        ${list.length ? `<div class="list">${list.map(p => `
+          <button class="card row" data-act="openPass" data-id="${p.id}">
+            <div class="av-wrap">${avatar(p.name, 46)}</div>
+            <div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${p.purpose} · ${relDay(p.date)}, ${t12(p.from)}</div>${p.vehicle ? `<div class="s" style="font-size:12px">${ic('car', 13)} ${esc(p.vehicle.plate)} · Bay ${p.bay}</div>` : ''}</div>
+            ${passPill(p)}
+          </button>`).join('')}</div>` : empty('id-badge-2', R.sub.ps === 'past' ? 'No past passes' : 'No passes here', 'Create a pass and it will appear here.')}
+      </div>
+      <div class="footer" style="padding-bottom:12px"><button class="btn" data-act="go" data-to="visitors">${ic('plus')} New Visitor Pass</button></div>`;
+  },
+
+  workers() {
+    const f = R.staffFilter, q = R.staffQuery.toLowerCase();
+    const cnt = k => S.staff.filter(s => s.status === k).length;
+    const list = S.staff.filter(s => (f === 'all' || s.status === f) && (!q || (s.name + s.role + s.id).toLowerCase().includes(q)));
+    return `<div class="content">
+        ${pageHead('Access', 'Household Staff', 'Manage the helpers and contractors who work at your home, and when they can enter.')}
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div><b style="font-size:17px">${S.staff.length} staff members</b><div class="small" style="color:var(--olive);font-weight:600;margin-top:2px">${ic('point-filled', 12)} Gate access synced</div></div>
+          <button class="btn sm dark" data-act="addStaff">${ic('user-plus', 17)} Add staff</button></div>
+          <div class="stats"><div class="stat"><b>${cnt('on')}</b><small>On site</small></div><div class="stat"><b>${cnt('scheduled')}</b><small>Scheduled</small></div><div class="stat"><b>${cnt('off')}</b><small>Off site</small></div></div>
+        </div>
+        <div class="inp" style="background:#fff;margin:12px 0">${ic('search')}<input id="staffSearch" placeholder="Search by name, role or ID" value="${esc(R.staffQuery)}" data-change="staffSearch" /></div>
+        <div class="chips">${[['all', `All (${S.staff.length})`], ['on', 'On site'], ['scheduled', 'Scheduled'], ['off', 'Off site']].map(([k, l]) => `<button class="chip ${f === k ? 'on' : ''}" data-act="staffFilter" data-val="${k}">${l}</button>`).join('')}</div>
+        <div class="list" id="staffList">${list.length ? list.map(staffCard).join('') : empty('search', 'No matches', 'Try a different name or filter.')}</div>
+      </div>`;
+  },
+
+  addStaff() {
+    const w = R.wiz, d = w.data;
+    const titles = ['Personal information', 'Role & employment', 'Schedule & access window', 'Gate & area access'];
+    const leads = ['Basic details the guardhouse uses to verify identity at the gate.', 'Sets the default access level and who they work for.', 'Gate access automatically locks outside these hours.', 'Choose where their pass works inside the village.'];
+    let body = '';
+    if (w.step === 1) body = `
+      <div class="card">
+        <div style="display:flex;gap:14px;align-items:center;margin-bottom:16px"><button type="button" class="sq" style="width:64px;height:64px;border-radius:50%;font-size:26px" data-act="soon">${ic('camera')}</button><div><b style="font-size:15px">Profile photo</b><div class="small muted">Used for face matching at the gate</div></div></div>
+        <div class="time2"><div class="field"><label>First name</label><div class="inp"><input name="first" value="${esc(d.first || '')}" placeholder="First" /></div></div><div class="field"><label>Last name</label><div class="inp"><input name="last" value="${esc(d.last || '')}" placeholder="Last" /></div></div></div>
+        <div class="field"><label>Mobile number</label><div class="inp">${ic('phone')}<input name="phone" inputmode="tel" value="${esc(d.phone || '')}" placeholder="+63 9XX XXX XXXX" /></div></div>
+        <div class="field" style="margin:0"><label>Valid ID</label>
+          <div class="opts" data-group="idType" style="grid-template-columns:repeat(3,1fr)">${["Driver's lic.", 'National ID', 'Passport'].map(t => `<button type="button" class="opt ${(d.idType || 'National ID') === t ? 'on' : ''}" data-act="pick" data-val="${t}" style="font-size:12.5px">${t}</button>`).join('')}</div>
+          <div class="inp" style="margin-top:10px">${ic('id')}<input name="idno" value="${esc(d.idno || '')}" placeholder="ID number" /></div></div>
+      </div>`;
+    if (w.step === 2) body = `
+      <div class="lbl">Primary responsibility <em>Tap to choose</em></div>
+      <div class="opt-cards" data-group="role">${[['bucket-droplet', 'Housekeeper', 'Unit access'], ['plant-2', 'Gardener', 'Grounds access'], ['steering-wheel', 'Driver', 'Garage & valet'], ['tools-kitchen-2', 'Cook', 'Unit access'], ['heart-handshake', 'Caregiver', 'Priority access'], ['tool', 'Contractor', 'Project-based']].map(([i, t, s]) =>
+        `<button type="button" class="optc ${(d.role || 'Housekeeper') === t ? 'on' : ''}" data-act="pickCard" data-val="${t}"><span class="ic">${ic(i)}</span><span><b>${t}</b><small>${s}</small></span></button>`).join('')}</div>
+      <div class="sec" style="margin-top:22px"><h2 style="font-size:16px">Employment</h2></div>
+      <div data-group="emp">${[['Full-time', 'Works set days every week'], ['Part-time', 'Shift-based or occasional'], ['Project-based', 'Ends when the job is done']].map(([t, s]) =>
+        `<button type="button" class="radio ${(d.emp || 'Full-time') === t ? 'on' : ''}" data-act="pickRadio" data-val="${t}"><span class="rb"></span><span><b>${t}</b><small>${s}</small></span></button>`).join('')}</div>`;
+    if (w.step === 3) {
+      const days = d.days || [1, 1, 1, 1, 1, 0, 0];
+      body = `
+      <div class="card">
+        <div class="card-h" style="align-items:center">${ic('calendar')}<div class="grow"><b>Working days</b></div><span class="pill lime" id="dayCount">${days.filter(Boolean).length} days</span></div>
+        <div class="chips" style="margin-bottom:12px">${[['Mon – Fri', [1, 1, 1, 1, 1, 0, 0]], ['Full week', [1, 1, 1, 1, 1, 1, 1]], ['Weekends', [0, 0, 0, 0, 0, 1, 1]]].map(([l, v]) => `<button type="button" class="chip" data-act="dayPreset" data-val="${v.join('')}">${l}</button>`).join('')}</div>
+        <div class="weekdays">${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((x, k) => `<button type="button" class="wd ${days[k] ? 'on' : ''}" data-act="toggleDay">${x}<small>${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][k]}</small></button>`).join('')}</div>
+      </div>
+      <div class="card">
+        <div class="card-h" style="align-items:center">${ic('clock')}<div class="grow"><b>Entry window</b><small>Gate unlocks only during these hours</small></div><span class="pill" id="shiftPill">9h</span></div>
+        <div class="time2">
+          <label class="tbox"><small>Earliest arrival</small><input type="time" name="from" value="${d.from || '08:00'}" data-change="window" /></label>
+          <label class="tbox"><small>Latest departure</small><input type="time" name="to" value="${d.to || '17:00'}" data-change="window" /></label>
+        </div>
+        <div class="window"><div class="top"><span>${ic('point-filled', 11)} Daily window</span><span id="winLabel"></span></div><div class="wbar"><i id="winBar"></i></div><div class="ticks"><span>00:00</span><span>12:00</span><span>23:59</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h" style="align-items:center">${ic('calendar-due')}<div class="grow"><b>Access expires</b></div></div>
+        <div class="chips" data-group="expiry" style="margin:0">${['+6 months', '+1 year', 'No expiry'].map(t => `<button type="button" class="chip ${(d.expiry || '+1 year') === t ? 'on' : ''}" data-act="pickChip" data-val="${t}">${t}</button>`).join('')}</div>
+      </div>`;
+    }
+    if (w.step === 4) {
+      const zones = d.zones || { 'Main Gate': 1, 'North Gate': 0, 'Unit 3A': 1, 'Clubhouse & pool': 0, 'Service road': 1 };
+      body = `<div class="card divide" style="padding:4px 16px">${Object.entries(zones).map(([z, on]) => `
+        <div class="row" style="padding:14px 0"><span class="sq" style="width:40px;height:40px;font-size:20px">${ic(z.includes('Gate') ? 'building-arch' : z.includes('Unit') ? 'door' : z.includes('Club') ? 'swimming' : 'road')}</span><div class="grow"><div class="t" style="font-size:14.5px">${z}</div></div><button type="button" class="tgl ${on ? 'on' : ''}" data-act="toggleZone" data-zone="${z}" aria-label="${z}"></button></div>`).join('')}</div>
+        <div class="card" style="margin-top:12px">
+          <div class="kv"><span>Name</span><b>${esc((d.first || '') + ' ' + (d.last || ''))}</b></div>
+          <div class="kv"><span>Role</span><b>${d.role || 'Housekeeper'} · ${d.emp || 'Full-time'}</b></div>
+          <div class="kv"><span>Schedule</span><b>${dayLabel(d.days || [1, 1, 1, 1, 1, 0, 0])} · ${d.from || '08:00'}–${d.to || '17:00'}</b></div>
+          <div class="kv"><span>Expires</span><b>${d.expiry || '+1 year'}</b></div>
+        </div>`;
+    }
+    return `<div class="content">
+        <div class="bk"><button data-act="${w.step === 1 ? 'back' : 'wizBack'}" aria-label="Back">${ic('arrow-left')}</button><span class="eyebrow">Add staff</span></div>
+        <div class="progress-top"><span class="pill lime dot">Step ${w.step} of 4</span><span>${w.step * 25}% complete</span></div>
+        <div class="pbar"><i style="width:${(w.step - 1) * 25}%" data-to="${w.step * 25}%"></i></div>
+        <h1 class="h1">${titles[w.step - 1]}</h1><p class="lead">${leads[w.step - 1]}</p>
+        <form id="wizForm" onsubmit="return false" autocomplete="off">${body}</form>
+      </div>
+      <div class="footer">
+        <button class="btn" data-act="wizNext">${w.step === 4 ? `${ic('shield-check')} Register staff` : `Continue ${ic('arrow-right')}`}</button>
+      </div>`;
+  },
+
+  staffDone({ id }) {
+    const s = S.staff.find(x => x.id === id);
+    return `<div class="content success">
+        <div class="ring">${ic('check')}</div>
+        <h1 class="h1">Staff registered</h1>
+        <p class="lead">${esc(s.name)} can now enter during their schedule. Their digital pass was sent by SMS.</p>
+        <div class="card" style="text-align:left;margin-top:8px">
+          <div class="row" style="padding:0 0 12px">${avatar(s.name)}<div class="grow"><div class="t">${esc(s.name)}</div><div class="s">${s.role}</div></div><span class="pill mono">#${s.id}</span></div>
+          <div class="divide"><div class="kv"><span>Schedule</span><b>${s.days} · ${s.hours}</b></div><div class="kv"><span>Access</span><b>${s.zones.join(', ')}</b></div></div>
+        </div>
+      </div>
+      <div class="footer"><button class="btn" data-act="doneStaff">View household staff</button><button class="btn ghost" data-act="addStaff">${ic('user-plus', 18)} Add another</button></div>`;
+  },
+
+  requests(_, root) { return SCREENS.service(_, root); },
+  service(_, root) {
+    R.sub.sr ??= 'new';
+    const cats = [['tool', 'General Maintenance'], ['leaf', 'Landscaping'], ['bug', 'Pest Control'], ['bucket-droplet', 'Housekeeping'], ['shield-check', 'Security Concern'], ['dots', 'Others']];
+    const body = R.sub.sr === 'new'
+      ? `<div class="tiles">${cats.map(([i, l]) => `<button class="tile" data-act="newReq" data-cat="${l}" style="text-align:center;padding:20px 10px">${ic(i, 30)}<b style="margin-top:12px;font-size:14px">${l}</b></button>`).join('')}</div>`
+      : (S.requests.length ? `<div class="list">${S.requests.map(r => `
+          <div class="card row" style="align-items:flex-start"><span class="sq">${ic(cats.find(c => c[1] === r.cat)?.[0] || 'dots')}</span>
+          <div class="grow"><div class="t">${r.cat}</div><div class="s">${esc(r.desc)}</div><div class="s" style="font-size:12px;margin-top:6px">${r.id} · ${fmtShort(asDate(r.date))}</div></div>${reqPill(r.status)}</div>`).join('')}</div>`
+        : empty('clipboard', 'No requests', 'Submit a request and track it here.'));
+    return `${root ? rootHeader('Helpdesk') : ''}
+      <div class="content">
+        ${pageHead('Helpdesk', 'How can we help?', 'Report an issue and track it until it\'s fixed.', !root)}
+        ${seg('sr', [['new', 'New request'], ['mine', `My requests (${S.requests.length})`]])}
+        ${body}
+      </div>`;
+  },
+
+  parking() {
+    const v = S.vehicles[S.activeVehicle];
+    return `<div class="content">
+        ${pageHead('Vehicles', 'Parking', 'Your cars, season parking and guest bays.')}
+        <div class="card"><div class="row" style="padding:0"><span class="sq" style="width:52px;height:52px;background:var(--olive);color:#fff">${ic('car', 26)}</span>
+          <div class="grow"><div class="t" style="font-size:19px">${v.plate}</div><div class="s">${v.model} · ${v.color}</div></div><button class="btn sm soft" data-act="changeVehicle">Change</button></div>
+          <div class="tbox" style="margin-top:14px;display:flex;justify-content:space-between;align-items:center"><div><small>Season parking</small><b style="font-size:15px">Valid until 31 Dec 2026</b></div><span class="pill lime dot">Active</span></div>
+        </div>
+        <div class="card divide" style="padding:2px 16px;margin-top:12px">${[['car', 'Register new vehicle', 'go" data-to="registerVehicle'], ['parking', 'Visitor parking', 'visitorParking'], ['history', 'Parking history', 'go" data-to="parkingHistory']].map(([i, l, a]) =>
+          `<button class="row" style="padding:14px 0" data-act="${a}"><span style="font-size:22px;color:var(--deep)">${ic(i)}</span><div class="grow" style="font-weight:500">${l}</div>${ic('chevron-right', 18)}</button>`).join('')}</div>
+        <div class="notice" style="margin-top:12px"><span class="sq">${ic('scan')}</span><div><b>Plate recognition</b>Registered plates open the barrier automatically at both gates.</div></div>
+      </div>`;
+  },
+
+  registerVehicle() {
+    return `<div class="content">
+        ${pageHead('Vehicles', 'Register vehicle', 'Add a car so the gate recognises it.')}
+        <form id="vehForm" autocomplete="off" class="card" onsubmit="return false">
+          <div class="field"><label>Plate number</label><div class="inp">${ic('license')}<input name="plate" placeholder="e.g. ABC 1234" style="text-transform:uppercase" /></div></div>
+          <div class="field"><label>Make &amp; model</label><div class="inp">${ic('car')}<input name="model" placeholder="e.g. Toyota Vios" /></div></div>
+          <div class="field" style="margin:0"><label>Colour</label><div class="opts" data-group="color" style="grid-template-columns:repeat(3,1fr)">${['White', 'Black', 'Silver', 'Grey', 'Red', 'Blue'].map((c, k) => `<button type="button" class="opt ${k === 0 ? 'on' : ''}" data-act="pick" data-val="${c}">${c}</button>`).join('')}</div></div>
+        </form>
+      </div>
+      <div class="footer"><button class="btn" data-act="saveVehicle">Register vehicle</button></div>`;
+  },
+
+  parkingHistory() {
+    const h = [['NFG 5673', 'Entry · Main Gate', 'Today · 7:42 AM'], ['NFG 5673', 'Exit · North Gate', 'Yesterday · 6:15 PM'], ['ABK 2190', 'Entry · Main Gate', 'Yesterday · 8:02 AM'], ['Visitor · XTR 881', 'Entry · Visitor bay V-04', '12 Oct · 2:00 PM']];
+    return `<div class="content">
+        ${pageHead('Vehicles', 'Parking history', '')}
+        <div class="list">${h.map(([p, w, t]) => `<div class="card row"><span class="sq ${w.startsWith('Exit') ? 'exit' : 'entry'}">${ic(w.startsWith('Exit') ? 'logout' : 'login')}</span>
+        <div class="grow"><div class="t">${p}</div><div class="s">${w}</div></div><div class="small muted">${t}</div></div>`).join('')}</div>
+      </div>`;
+  },
+
+  household() {
+    return `<div class="content">
+        ${pageHead('Members', 'Household', 'People who share access to Block 12 · Unit 3A.')}
+        <div class="list">
+          ${S.household.map((m, i) => `<button class="card row" data-act="member" data-i="${i}">${avatar(m.name)}<div class="grow"><div class="t">${m.name}</div><div class="s">${m.role}</div></div>${ic('chevron-right', 18)}</button>`).join('')}
+          <button class="card row" data-act="inviteMember"><span class="sq" style="border-radius:50%">${ic('plus')}</span><div class="grow" style="color:var(--olive);font-weight:600">Invite member</div></button>
+        </div>
+      </div>`;
+  },
+
+  profile(_, root) {
+    return `${root ? rootHeader('Profile') : ''}
+      <div class="content">
+        <div class="card prof">
+          <div class="top"><div class="av-wrap">${avatar(S.user.name, 68)}<span class="verified">${ic('check')}</span></div>
+          <div><h2>${S.user.name}</h2><div class="role">Primary homeowner</div><div class="small muted">Block 12 · Unit 3A</div></div></div>
+          <div class="stats"><div class="stat"><small>Unit</small><b style="font-size:16px">3A</b></div><div class="stat"><small>Block</small><b style="font-size:16px">12</b></div><div class="stat"><small>Members</small><b style="font-size:16px">${S.household.length}</b></div></div>
+          <div class="contact">${ic('mail', 18)}<span class="grow">${S.user.email}</span><button data-act="copy" data-val="${S.user.email}" aria-label="Copy email">${ic('copy', 18)}</button></div>
+          <div class="contact">${ic('phone', 18)}<span class="grow">${S.user.phone}</span><span class="pill" style="background:#fff">Primary</span></div>
+        </div>
+        <div style="height:12px"></div>
+        ${ownerPassCard()}
+        <div class="sec"><h2>Vehicles</h2><button class="link" data-act="go" data-to="parking">Manage</button></div>
+        <div class="list">${S.vehicles.map((v, i) => `<div class="card row"><span class="sq">${ic('car')}</span><div class="grow"><div class="t">${v.plate}</div><div class="s">${v.model} · ${v.color}</div><div class="s" style="font-size:12px">${ic('parking', 13)} ${v.slot}</div></div>${i === S.activeVehicle ? '<span class="pill lime">Primary</span>' : '<span class="pill">Secondary</span>'}</div>`).join('')}</div>
+        <div class="card divide" style="padding:2px 16px;margin-top:16px">${[['home-2', 'Household', 'go" data-to="household'], ['users', 'Household staff', 'go" data-to="workers'], ['speakerphone', 'Announcements', 'go" data-to="announcements'], ['receipt', 'Dues & payments', 'soon'], ['settings', 'Settings', 'soon'], ...(EMBED ? [] : [['book-2', 'Back to case study', 'caseStudy']])].map(([i, l, a]) =>
+          `<button class="row" style="padding:14px 0" data-act="${a}"><span style="font-size:22px;color:var(--deep)">${ic(i)}</span><div class="grow" style="font-weight:500">${l}</div>${ic('chevron-right', 18)}</button>`).join('')}</div>
+        <button class="btn danger" style="margin-top:10px" data-act="logout">${ic('logout', 18)} Log out</button>
+      </div>`;
+  },
+
+  announcements() {
+    return `<div class="content">${pageHead('Community', 'News & announcements', '')}<div class="list">${S.news.map(newsCard).join('')}</div></div>`;
+  },
+
+  notifications() {
+    return `<div class="content">
+        <div class="bk"><button data-act="back" aria-label="Back">${ic('arrow-left')}</button><span class="eyebrow">Inbox</span><button style="margin-left:auto;width:auto;font-size:13px;font-weight:600;color:var(--olive)" data-act="readAll">Mark all read</button></div>
+        <h1 class="h1" style="margin-bottom:16px">Notifications</h1>
+        <div class="list">${S.notifs.map(n => `<div class="card row" style="align-items:flex-start"><span style="color:var(--olive);font-size:22px;padding-top:1px">${ic('bell')}</span>
+          <div class="grow"><div class="t" style="font-size:14.5px">${n.t}</div><div class="s" style="line-height:1.45">${n.b}</div></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><span class="small muted">${n.ago}</span>${n.unread ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--olive)"></span>' : ''}</div></div>`).join('')}</div>
+      </div>`;
+  },
+};
+
+/* ================= Partials ================= */
+function newsCard(n) {
+  return `<button class="card news" data-act="news" data-id="${n.id}">
+    <div class="img">${img(n.img, '')}</div>
+    <div class="body"><div class="meta"><b>${n.tag.toUpperCase()}</b><span class="muted">${n.when}</span></div>
+    <h3>${n.title}</h3><p>${n.body.split('.')[0]}.</p>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px"><span class="pill">${n.cta}</span></div></div>
+  </button>`;
+}
+
+function bookingRow(b) {
+  const f = S.facilities.find(x => x.id === b.fac);
+  return `<div class="card row" style="padding:10px">
+    <div class="cover" style="width:64px;height:64px;border-radius:14px;overflow:hidden;flex-shrink:0">${img(f.img, '')}</div>
+    <div class="grow"><div class="t">${f.name}</div><div class="s">${relDay(b.date)} · ${b.slot}</div><div class="s" style="font-size:12px">${b.guests} guests</div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><span class="pill lime">Confirmed</span><button class="small" style="color:var(--red);font-weight:600" data-act="cancelBooking" data-id="${b.id}">Cancel</button></div>
+  </div>`;
+}
+
+function staffCard(s) {
+  return `<div class="card staff">
+    <div class="row" style="padding:0"><div class="av-wrap">${avatar(s.name, 50)}<span class="av-dot" style="background:${staffDot(s)}"></span></div>
+      <div class="grow"><div class="t" style="font-size:16px">${s.name}</div><div class="s">${s.role}</div></div><span class="pill mono">#${s.id}</span></div>
+    <div class="sched">
+      <div class="when">${ic('clock', 17)} ${s.days} · ${s.hours}</div>
+      <div class="zones">${s.zones.map(z => `<span class="zone">${z}</span>`).join('')}</div>
+      ${staffPill(s)}
+    </div>
+    <div class="staff-f"><button class="link" data-act="staffProfile" data-id="${s.id}">View profile &amp; ID ${ic('chevron-right', 16)}</button>
+      ${s.status === 'on' ? `<button class="btn sm soft" data-act="checkout" data-id="${s.id}">Check out</button>` : s.status === 'scheduled' ? `<button class="btn sm soft" data-act="extend" data-id="${s.id}">Extend access</button>` : `<button class="btn sm soft" data-act="checkin" data-id="${s.id}">Check in now</button>`}</div>
+  </div>`;
+}
+
+function ownerPassCard() {
+  return `<div class="pass">
+    <div class="pass-h"><span>${ic('leaf', 16)} Resident credential</span><span class="pill lime dot" style="font-size:11px">Active</span></div>
+    <div class="pass-b">
+      <div class="who" style="margin-bottom:14px"><div><small>Owner digital pass</small><b style="font-size:18px">${S.user.name}</b><span>Block 12 · Unit 3A</span></div></div>
+      <div class="qrbox"><div class="qr">${qrSvg('OWNER-JL-12-3A')}</div><small>Scan at any gate or turnstile</small></div>
+      <div class="codebox"><div><small>Guard verification code</small><b>#940-108</b></div><button class="copy" data-act="copy" data-val="940-108">${ic('copy', 15)} Copy</button></div>
+      <div class="pass-actions"><button class="btn white" data-act="wallet">${ic('wallet')} Add to Wallet</button><button class="btn glass" data-act="offline">${ic('wifi-off')} Offline pass</button></div>
+    </div>
+  </div>`;
+}
+
+const dayLabel = days => {
+  const k = days.join('');
+  if (k === '1111100') return 'Mon – Fri';
+  if (k === '1111111') return 'Every day';
+  if (k === '0000011') return 'Weekends';
+  return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].filter((_, i) => days[i]).join(', ') || 'No days';
+};
+
+function qrSvg(seed) {
+  let h = [...seed].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const r = () => (h = (h * 1103515245 + 12345) >>> 0) / 4294967296;
+  const n = 25, cells = [];
+  const finder = (x, y) => `<rect x="${x}" y="${y}" width="7" height="7" rx="1.6" fill="#384C00"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" rx="1.1" fill="#fff"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3" rx=".8" fill="#384C00"/>`;
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const inF = (x < 8 && y < 8) || (x > n - 9 && y < 8) || (x < 8 && y > n - 9);
+    const mid = x > 9 && x < 15 && y > 9 && y < 15;
+    if (!inF && !mid && r() > .52) cells.push(`<rect x="${x + .08}" y="${y + .08}" width=".84" height=".84" rx=".25"/>`);
+  }
+  return `<svg viewBox="0 0 ${n} ${n}" width="100%" height="100%"><g fill="#384C00">${cells.join('')}</g>${finder(0, 0)}${finder(n - 7, 0)}${finder(0, n - 7)}<rect x="10.4" y="10.4" width="4.2" height="4.2" rx="1.2" fill="#4C6810"/><path d="M12.5 11.3l1.2.5v.9c0 .7-.5 1.2-1.2 1.5-.7-.3-1.2-.8-1.2-1.5v-.9z" fill="#fff"/></svg>`;
+}
+
+/* ================= Sheets & toast ================= */
+function sheet(html, { update = false } = {}) {
+  const open = device.querySelector('.sheet');
+  if (update && open) {
+    const top = open.scrollTop, left = open.querySelector('.days')?.scrollLeft;
+    open.innerHTML = `<div class="grab"></div>${html}`;
+    open.scrollTop = top;
+    if (left != null && open.querySelector('.days')) open.querySelector('.days').scrollLeft = left;
+    return;
+  }
+  closeSheet(true);
+  device.insertAdjacentHTML('beforeend', `<div class="scrim" data-act="closeSheet"></div><div class="sheet"><div class="grab"></div>${html}</div>`);
+}
+function closeSheet(instant) {
+  const sh = device.querySelector('.sheet'), sc = device.querySelector('.scrim');
+  if (!sh) return;
+  if (instant === true) { sh.remove(); sc?.remove(); return; }
+  sh.classList.add('closing'); sh.style.transform = 'translateY(100%)';
+  sc && (sc.style.transition = 'opacity .22s', sc.style.opacity = 0);
+  setTimeout(() => { sh.remove(); sc?.remove(); }, 220);
+}
+// Drag the sheet handle down to dismiss
+let drag = null;
+device.addEventListener('pointerdown', e => {
+  const g = e.target.closest('.sheet .grab'); if (!g) return;
+  const sh = g.parentElement; drag = { sh, y: e.clientY, dy: 0 }; sh.classList.add('dragging'); g.setPointerCapture(e.pointerId);
+});
+device.addEventListener('pointermove', e => { if (!drag) return; drag.dy = Math.max(0, e.clientY - drag.y); drag.sh.style.transform = `translateY(${drag.dy}px)`; });
+device.addEventListener('pointerup', () => {
+  if (!drag) return; const { sh, dy } = drag; drag = null; sh.classList.remove('dragging');
+  if (dy > 110) closeSheet(); else { sh.style.transition = 'transform .25s var(--ease)'; sh.style.transform = ''; setTimeout(() => sh.style.transition = '', 260); }
+});
+
+function toast(msg, icon = 'circle-check') {
+  device.querySelectorAll('.toast').forEach(e => e.remove());
+  device.insertAdjacentHTML('beforeend', `<div class="toast">${ic(icon)}${msg}</div>`);
+  setTimeout(() => device.querySelector('.toast')?.remove(), 2400);
+}
+function need(form, names) {
+  let ok = true;
+  names.forEach(n => {
+    const el = form.elements[n], box = el.closest('.inp') || el;
+    const bad = !el.value.trim();
+    box.classList.toggle('err', bad);
+    if (bad && ok) { el.focus(); ok = false; }
+  });
+  return ok;
+}
+const groupVal = (root, g) => root.querySelector(`[data-group="${g}"] .on`)?.dataset.val;
+
+/* ================= Booking ================= */
+let bk = null;
+function bookingSheet() {
+  const f = S.facilities.find(x => x.id === bk.fac);
+  const days = Array.from({ length: 10 }, (_, i) => addDays(today, i));
+  const taken = new Set(S.bookings.filter(b => b.fac === f.id && b.date === bk.date && b.status !== 'Cancelled').map(b => b.slot));
+  f.slots.forEach((s, i) => { if ((bk.date.charCodeAt(9) + i) % 5 === 0) taken.add(s); });
+  sheet(`
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px"><div class="cover" style="width:56px;height:56px;border-radius:14px;overflow:hidden">${img(f.img, '')}</div><div><h3>Book ${f.name}</h3><div class="small muted">Open daily · ${f.hours}</div></div></div>
+    <div class="lbl">Select date</div>
+    <div class="days">${days.map(d => `<button class="day ${iso(d) === bk.date ? 'on' : ''}" data-act="bkDay" data-val="${iso(d)}"><span>${d.toLocaleDateString('en-US', { weekday: 'short' })}</span><b>${d.getDate()}</b></button>`).join('')}</div>
+    <div class="lbl" style="margin-top:18px">Select time <em>2-hour slots</em></div>
+    <div class="slots">${f.slots.map(s => `<button class="slot ${bk.slot === s ? 'on' : ''}" data-act="bkSlot" data-val="${s}" ${taken.has(s) ? 'disabled' : ''}>${s}</button>`).join('')}</div>
+    <div class="lbl" style="margin-top:18px">Guests</div>
+    <div class="stepper"><button data-act="bkGuests" data-val="-1">${ic('minus')}</button><b>${bk.guests}</b><button data-act="bkGuests" data-val="1">${ic('plus')}</button><span class="small muted">Max 10 guests</span></div>
+    <button class="btn" style="margin-top:22px;${bk.slot ? '' : 'opacity:.45'}" data-act="bkConfirm">${bk.slot ? `Confirm · ${fmtShort(asDate(bk.date))}, ${bk.slot}` : 'Select a time slot'}</button>`, { update: true });
+}
+
+/* ================= Live form helpers ================= */
+function updateHours() {
+  const f = document.getElementById('vpForm'); if (!f) return;
+  const m = s => { const [h, mm] = s.split(':').map(Number); return h * 60 + mm; };
+  let d = (m(f.to.value) - m(f.from.value)) / 60; if (d <= 0) d += 24;
+  document.getElementById('hrsPill').textContent = `${Math.round(d * 10) / 10} hours`;
+}
+function updateWindow() {
+  const f = document.getElementById('wizForm'); if (!f || !f.from) return;
+  const m = s => { const [h, mm] = s.split(':').map(Number); return h * 60 + mm; };
+  const a = m(f.from.value), b = m(f.to.value), span = Math.max(0, b - a);
+  const bar = document.getElementById('winBar');
+  bar.style.left = (a / 1440 * 100) + '%'; bar.style.width = (span / 1440 * 100) + '%';
+  document.getElementById('winLabel').textContent = `${t12(f.from.value)} – ${t12(f.to.value)}`;
+  document.getElementById('shiftPill').textContent = `${Math.round(span / 6) / 10}h shift`;
+}
+function updateDayCount() {
+  const n = document.querySelectorAll('.wd.on').length;
+  const el = document.getElementById('dayCount'); if (el) el.textContent = `${n} day${n === 1 ? '' : 's'}`;
+}
+function collectWizard() {
+  const f = document.getElementById('wizForm'), d = R.wiz.data;
+  if (R.wiz.step === 1) { Object.assign(d, { first: f.first.value.trim(), last: f.last.value.trim(), phone: f.phone.value.trim(), idno: f.idno.value.trim(), idType: groupVal(f, 'idType') }); }
+  if (R.wiz.step === 2) { Object.assign(d, { role: groupVal(f, 'role'), emp: groupVal(f, 'emp') }); }
+  if (R.wiz.step === 3) { Object.assign(d, { days: [...f.querySelectorAll('.wd')].map(x => x.classList.contains('on') ? 1 : 0), from: f.from.value, to: f.to.value, expiry: groupVal(f, 'expiry') }); }
+  if (R.wiz.step === 4) { d.zones = Object.fromEntries([...f.querySelectorAll('[data-zone]')].map(x => [x.dataset.zone, x.classList.contains('on') ? 1 : 0])); }
+}
+function afterWizardRender() {
+  requestAnimationFrame(() => {
+    const bar = document.querySelector('.pbar i'); if (bar) bar.style.width = bar.dataset.to;
+    updateWindow();
+  });
+}
+
+/* ================= Actions ================= */
+const A = {
+  back: pop,
+  tab: d => setTab(d.tab),
+  go: d => { if (d.to === 'notifications') S.unread = false; push(d.to); },
+  sub: d => { R.sub[d.key] = d.val; render(); },
+  filter: d => { R.filter = d.val; render(); },
+  closeSheet: () => closeSheet(),
+  soon: () => toast('Coming soon in the full app', 'sparkles'),
+  caseStudy: () => { location.href = 'index.html'; },
+
+  // Auth
+  peek: (_, el) => { const i = el.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; el.innerHTML = ic(i.type === 'password' ? 'eye' : 'eye-off', 20); },
+  login: (_, el) => {
+    el.classList.add('loading'); el.innerHTML = 'Signing in';
+    setTimeout(() => { R.authed = true; R.tab = 'home'; R.stack = []; R.anim = 'fade'; render(); toast('Welcome back, John', 'hand-stop'); }, 900);
+  },
+  faceid: () => {
+    device.insertAdjacentHTML('beforeend', `<div class="scan-overlay"><div><div class="box scanline">${ic('face-id')}</div><p>Looking for your face…</p></div></div>`);
+    setTimeout(() => { const o = device.querySelector('.scan-overlay .box'); o.classList.add('ok'); o.classList.remove('scanline'); o.innerHTML = ic('check'); o.nextElementSibling.textContent = 'Verified'; }, 1100);
+    setTimeout(() => { device.querySelector('.scan-overlay')?.remove(); R.authed = true; R.tab = 'home'; R.anim = 'fade'; render(); }, 1700);
+  },
+  logout: () => { R.authed = false; R.stack = []; R.tab = 'home'; R.anim = 'fade'; render(); },
+
+  // Home
+  ownerPass: () => sheet(`<h3 style="margin-bottom:14px">My gate pass</h3>${ownerPassCard()}`),
+  news: d => {
+    const n = S.news.find(x => x.id == d.id);
+    sheet(`<div class="cover news-img" style="border-radius:18px;overflow:hidden;margin-bottom:16px">${img(n.img, '')}</div>
+      <div class="eyebrow">${n.tag}</div><h3 style="margin-top:6px">${n.title}</h3>
+      <div class="small muted" style="margin-bottom:12px">${n.when} · Village admin</div>
+      <p style="line-height:1.6;margin:0 0 20px;color:var(--muted)">${n.body}</p><button class="btn soft" data-act="closeSheet">Got it</button>`);
+  },
+  readAll: () => { S.notifs.forEach(n => n.unread = false); render(); toast('All caught up'); },
+  copy: d => { navigator.clipboard?.writeText(d.val).catch(() => {}); toast('Copied to clipboard', 'copy'); },
+  wallet: () => toast('Added to Wallet', 'wallet'),
+  offline: () => toast('Pass saved for offline use', 'wifi-off'),
+  share: () => toast('Share sheet opened', 'share'),
+  resend: () => toast('SMS sent again', 'message-2'),
+
+  // Facilities
+  book: d => { bk = { fac: d.id, date: iso(today), slot: null, guests: 2 }; bookingSheet(); },
+  bkDay: d => { bk.date = d.val; bk.slot = null; bookingSheet(); },
+  bkSlot: d => { bk.slot = d.val; bookingSheet(); },
+  bkGuests: d => { bk.guests = Math.min(10, Math.max(1, bk.guests + +d.val)); bookingSheet(); },
+  bkConfirm: () => {
+    if (!bk.slot) return;
+    S.bookings.unshift({ id: Date.now(), fac: bk.fac, date: bk.date, slot: bk.slot, guests: bk.guests, status: 'Confirmed' });
+    closeSheet(); setTimeout(() => { render(); toast('Booking confirmed'); }, 230);
+  },
+  cancelBooking: d => sheet(`<h3>Cancel this booking?</h3><p class="lead" style="margin:6px 0 20px">You can book again anytime if slots are free.</p>
+      <button class="btn" style="background:var(--red);box-shadow:none" data-act="cancelYes" data-id="${d.id}">Yes, cancel booking</button>
+      <button class="btn ghost" style="margin-top:6px" data-act="closeSheet">Keep it</button>`),
+  cancelYes: d => { S.bookings.find(b => b.id == d.id).status = 'Cancelled'; render(); toast('Booking cancelled', 'calendar-x'); },
+
+  // Generic pickers (DOM-only selection state)
+  pick: (_, el) => {
+    const g = el.closest('[data-group]'); g.querySelectorAll('.on').forEach(x => x.classList.remove('on')); el.classList.add('on');
+    if (g.dataset.group === 'purpose') document.getElementById('otherPurpose').classList.toggle('open', el.dataset.val === 'Other');
+  },
+  pickCard: (_, el) => A.pick(_, el),
+  pickRadio: (_, el) => A.pick(_, el),
+  pickChip: (_, el) => A.pick(_, el),
+  pickDate: (_, el) => A.pick(_, el),
+
+  // Visitor passes
+  toggleVehicle: (_, el) => { el.classList.toggle('on'); document.getElementById('vehicleBox').classList.toggle('open', el.classList.contains('on')); },
+  createPass: (_, el) => {
+    const f = document.getElementById('vpForm');
+    if (!need(f, ['name', 'phone'])) return;
+    const veh = document.querySelector('[data-act="toggleVehicle"]').classList.contains('on');
+    if (veh && !need(f, ['plate'])) return;
+    let purpose = groupVal(f, 'purpose'); if (purpose === 'Other' && f.other.value.trim()) purpose = f.other.value.trim();
+    const p = {
+      id: 'VP-' + rnd(48300, 49999), name: f.name.value.trim(), phone: f.phone.value.trim(), purpose,
+      date: groupVal(f, 'when'), from: f.from.value, to: f.to.value,
+      vehicle: veh ? { plate: f.plate.value.trim().toUpperCase(), model: f.model.value.trim() } : null,
+      bay: (f.querySelector('#vehicleBox b')?.textContent || '').replace('Visitor Bay ', ''), pin: `${rnd(100, 999)}-${rnd(100, 999)}`, status: 'live',
+    };
+    el.classList.add('loading'); el.innerHTML = 'Issuing pass';
+    setTimeout(() => { S.passes.unshift(p); R.stack[R.stack.length - 1] = { name: 'passCreated', params: { id: p.id, fresh: true } }; R.anim = 'enter'; render(); }, 800);
+  },
+  openPass: d => push('passCreated', { id: d.id }),
+  newPass: () => { R.stack = [{ name: 'visitors', params: {} }]; R.anim = 'enter'; render(); },
+  revoke: d => sheet(`<h3>Revoke this pass?</h3><p class="lead" style="margin:6px 0 20px">The QR code and PIN will stop working at the gate immediately.</p>
+      <button class="btn" style="background:var(--red);box-shadow:none" data-act="revokeYes" data-id="${d.id}">Revoke clearance</button><button class="btn ghost" style="margin-top:6px" data-act="closeSheet">Keep pass</button>`),
+  revokeYes: d => { S.passes.find(p => p.id === d.id).status = 'revoked'; R.stack[R.stack.length - 1].params.fresh = false; render(); toast('Pass revoked', 'ban'); },
+
+  // Staff
+  staffFilter: d => { R.staffFilter = d.val; render(); },
+  checkout: d => { const s = S.staff.find(x => x.id === d.id); s.status = 'off'; s.since = ''; render(); toast(`${s.name.split(' ')[0]} checked out`, 'logout'); },
+  checkin: d => { const s = S.staff.find(x => x.id === d.id); s.status = 'on'; s.since = fmtTime(new Date()); render(); toast(`${s.name.split(' ')[0]} checked in`, 'login'); },
+  extend: d => { const s = S.staff.find(x => x.id === d.id); toast(`${s.name.split(' ')[0]}'s access extended`, 'calendar-plus'); },
+  staffProfile: d => {
+    const s = S.staff.find(x => x.id === d.id);
+    sheet(`<div style="text-align:center"><div style="display:flex;justify-content:center;margin:4px 0 12px">${avatar(s.name, 76)}</div><h3>${s.name}</h3><div class="small muted">${s.role}</div><div style="margin:10px 0 4px">${staffPill(s)}</div></div>
+      <div class="qrbox" style="background:var(--fill);margin:16px 0"><div class="qr" style="width:132px;height:132px">${qrSvg(s.id)}</div><small>Staff ID #${s.id}</small></div>
+      <div class="divide"><div class="kv"><span>Schedule</span><b>${s.days} · ${s.hours}</b></div><div class="kv"><span>Access</span><b>${s.zones.join(', ')}</b></div><div class="kv"><span>Category</span><b>${s.cat}</b></div></div>
+      <button class="btn danger" style="margin-top:10px" data-act="suspend" data-id="${s.id}">${ic('lock', 16)} Suspend access</button>`);
+  },
+  suspend: d => { const s = S.staff.find(x => x.id === d.id); s.status = 'off'; s.since = ''; render(); toast('Access suspended', 'lock'); },
+  addStaff: () => { R.wiz = { step: 1, data: {} }; if (R.stack.at(-1)?.name === 'staffDone') { R.stack[R.stack.length - 1] = { name: 'addStaff', params: {} }; R.anim = 'enter'; render(); } else push('addStaff'); afterWizardRender(); },
+  wizBack: () => { collectWizard(); R.wiz.step--; R.anim = 'back'; render(); afterWizardRender(); },
+  wizNext: () => {
+    const f = document.getElementById('wizForm');
+    if (R.wiz.step === 1 && !need(f, ['first', 'last', 'phone'])) return;
+    if (R.wiz.step === 3 && !f.querySelector('.wd.on')) return toast('Pick at least one working day', 'alert-circle');
+    collectWizard();
+    if (R.wiz.step < 4) { R.wiz.step++; R.anim = 'enter'; render(); afterWizardRender(); return; }
+    const d = R.wiz.data, zones = Object.entries(d.zones).filter(([, v]) => v).map(([k]) => k);
+    const s = { id: 'STF-' + rnd(100, 999), name: `${d.first} ${d.last}`, role: d.role || 'Housekeeper', cat: d.role === 'Contractor' ? 'Contractor' : 'Domestic', days: dayLabel(d.days), hours: `${d.from} – ${d.to}`, zones: zones.length ? zones : ['Main Gate'], status: 'scheduled', since: 'Next shift' };
+    S.staff.push(s);
+    R.stack[R.stack.length - 1] = { name: 'staffDone', params: { id: s.id } }; R.anim = 'fade'; render();
+  },
+  doneStaff: () => { R.stack.pop(); if (R.stack.at(-1)?.name !== 'workers') R.stack.push({ name: 'workers', params: {} }); R.staffFilter = 'all'; R.anim = 'back'; render(); },
+  dayPreset: d => { document.querySelectorAll('.wd').forEach((x, i) => x.classList.toggle('on', d.val[i] === '1')); updateDayCount(); },
+  toggleDay: (_, el) => { el.classList.toggle('on'); updateDayCount(); },
+  toggleZone: (_, el) => el.classList.toggle('on'),
+
+  // Helpdesk
+  newReq: d => sheet(`<h3>${d.cat}</h3><p class="lead" style="margin:4px 0 16px">The admin team usually responds within 24 hours.</p>
+    <form id="reqForm" autocomplete="off" data-cat="${d.cat}" onsubmit="return false">
+      <div class="field"><label>Describe the issue</label><textarea class="ta" name="desc" placeholder="e.g. Aircon is leaking water in the bedroom"></textarea></div>
+      <div class="field"><label>Priority</label><div class="opts" data-group="prio" style="grid-template-columns:repeat(3,1fr)">${['Normal', 'High', 'Urgent'].map((p, k) => `<button type="button" class="opt ${k === 0 ? 'on' : ''}" data-act="pick" data-val="${p}">${p}</button>`).join('')}</div></div>
+      <div class="field"><label>Photo (optional)</label><button type="button" class="inp" style="width:100%;justify-content:center;border:1.5px dashed #C4D9A0;color:var(--deep);font-weight:600;font-size:14px" data-act="soon">${ic('camera-plus')} Add a photo</button></div>
+    </form><button class="btn" data-act="saveReq">Submit request</button>`),
+  saveReq: () => {
+    const f = document.getElementById('reqForm');
+    if (!f.desc.value.trim()) { f.desc.style.borderColor = 'var(--red)'; f.desc.focus(); return; }
+    const id = 'SR-' + (1033 + S.requests.length);
+    S.requests.unshift({ id, cat: f.dataset.cat, desc: f.desc.value.trim(), date: iso(today), status: 'Pending' });
+    R.sub.sr = 'mine'; closeSheet(); setTimeout(() => { render(); toast(`${id} submitted`); }, 230);
+  },
+
+  // Parking
+  changeVehicle: () => sheet(`<h3>Select vehicle</h3><div class="list" style="margin-top:14px">${S.vehicles.map((v, i) => `
+    <button class="card row" data-act="pickVehicle" data-i="${i}" style="box-shadow:none;border:1.5px solid ${i === S.activeVehicle ? 'var(--olive)' : 'var(--line)'}">
+      <span class="sq" style="${i === S.activeVehicle ? 'background:var(--olive);color:#fff' : ''}">${ic('car')}</span>
+      <div class="grow"><div class="t">${v.plate}</div><div class="s">${v.model} · ${v.color}</div></div>${i === S.activeVehicle ? `<span style="color:var(--olive);font-size:22px">${ic('circle-check-filled')}</span>` : ''}</button>`).join('')}</div>`),
+  pickVehicle: d => { S.activeVehicle = +d.i; render(); toast('Active vehicle updated', 'car'); },
+  saveVehicle: () => {
+    const f = document.getElementById('vehForm');
+    if (!need(f, ['plate', 'model'])) return;
+    S.vehicles.push({ plate: f.plate.value.trim().toUpperCase(), model: f.model.value.trim(), color: groupVal(f, 'color'), slot: 'Street · Bay 6' });
+    S.activeVehicle = S.vehicles.length - 1; pop(); toast('Vehicle registered', 'car');
+  },
+  visitorParking: () => sheet(`<h3>Visitor parking</h3><p class="lead" style="margin:4px 0 16px">Reserve a bay for a guest's car.</p>
+    <div class="slots" data-group="bay" style="margin-bottom:16px">${['V-01', 'V-02', 'V-03', 'V-04', 'V-05', 'V-06'].map((s, i) => `<button class="slot" data-act="pickBay" data-val="${s}" ${i % 3 === 1 ? 'disabled' : ''}>${s}</button>`).join('')}</div>
+    <div class="field"><label>Guest plate number</label><div class="inp">${ic('license')}<input placeholder="e.g. XTR 881" style="text-transform:uppercase" /></div></div>
+    <button class="btn" data-act="reserveBay">Reserve bay</button>`),
+  pickBay: (_, el) => { el.parentElement.querySelectorAll('.slot').forEach(s => s.classList.remove('on')); el.classList.add('on'); },
+  reserveBay: () => { if (!device.querySelector('.sheet .slot.on')) return toast('Pick a bay first', 'alert-circle'); closeSheet(); toast('Visitor bay reserved', 'parking'); },
+
+  // Household
+  member: d => {
+    const m = S.household[d.i];
+    sheet(`<div style="text-align:center"><div style="display:flex;justify-content:center;margin:4px 0 12px">${avatar(m.name, 76)}</div><h3>${m.name}</h3><div class="small muted">${m.role} · ${m.email}</div></div>
+      <div class="card divide" style="margin:18px 0;padding:2px 16px;box-shadow:none;background:var(--fill)">${[['Book facilities', true], ['Invite visitors', true], ['Manage staff', m.role !== 'Sub-account'], ['Pay dues', m.role === 'Owner']].map(([l, on]) => `
+        <div class="row" style="padding:12px 0"><div class="grow small">${l}</div><span style="color:${on ? 'var(--olive)' : '#B7BBB0'};font-size:20px">${ic(on ? 'circle-check-filled' : 'circle-x')}</span></div>`).join('')}</div>
+      ${m.role === 'Owner' ? '' : `<button class="btn danger" data-act="removeMember" data-i="${d.i}">Remove from household</button>`}`);
+  },
+  removeMember: d => { const [m] = S.household.splice(d.i, 1); render(); toast(`${m.name.split(' ')[0]} removed`); },
+  inviteMember: () => sheet(`<h3>Invite member</h3><p class="lead" style="margin:4px 0 16px">They'll get a link to join your unit.</p>
+    <form id="memForm" autocomplete="off" onsubmit="return false">
+      <div class="field"><label>Full name</label><div class="inp">${ic('user')}<input name="name" placeholder="Enter full name" /></div></div>
+      <div class="field"><label>Email or phone</label><div class="inp">${ic('mail')}<input name="email" placeholder="name@example.com" /></div></div>
+      <div class="field"><label>Access type</label><div class="opts" data-group="role">${['Family Member', 'Sub-account'].map((r, k) => `<button type="button" class="opt ${k === 0 ? 'on' : ''}" data-act="pick" data-val="${r}">${r}</button>`).join('')}</div></div>
+    </form><button class="btn" data-act="saveMember">Send invite</button>`),
+  saveMember: () => {
+    const f = document.getElementById('memForm');
+    if (!need(f, ['name', 'email'])) return;
+    S.household.push({ name: f.name.value.trim(), role: groupVal(f, 'role'), email: f.email.value.trim() });
+    closeSheet(); setTimeout(() => { render(); toast('Invite sent', 'send'); }, 230);
+  },
+};
+
+/* ================= Events ================= */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  e.preventDefault();
+  A[el.dataset.act]?.(el.dataset, el);
+});
+document.addEventListener('input', e => {
+  e.target.closest?.('.inp')?.classList.remove('err');
+  const c = e.target.dataset?.change;
+  if (c === 'hours') updateHours();
+  if (c === 'window') updateWindow();
+  if (c === 'staffSearch') {
+    R.staffQuery = e.target.value;
+    const q = R.staffQuery.toLowerCase(), f = R.staffFilter;
+    const list = S.staff.filter(s => (f === 'all' || s.status === f) && (!q || (s.name + s.role + s.id).toLowerCase().includes(q)));
+    document.getElementById('staffList').innerHTML = list.length ? list.map(staffCard).join('') : empty('search', 'No matches', 'Try a different name or filter.');
+  }
+});
+
+const tick = () => document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M/, '');
+tick(); setInterval(tick, 30000);
+
+// Standalone on a desktop: shrink the phone frame to fit short windows
+function fitPhone() {
+  const ph = document.querySelector('.phone');
+  ph.style.transform = '';
+  if (EMBED || innerWidth <= 440) return;
+  const scale = Math.min(1, (innerHeight - 32) / 844);
+  if (scale < 1) ph.style.transform = `scale(${scale})`;
+}
+fitPhone(); addEventListener('resize', fitPhone);
+render();
+
+// The case study page sends { type: 'renigo:goto', tab, screen, sub, action, data } as the reader scrolls.
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || d.type !== 'renigo:goto') return;
+  R.authed = true;
+  R.tab = d.tab || 'home';
+  R.stack = d.screen ? [{ name: d.screen, params: {} }] : [];
+  R.sub = { ...(d.sub || {}) };
+  if (d.screen === 'addStaff') R.wiz = { step: 1, data: {} };
+  R.anim = 'enter';
+  render();
+  if (d.screen === 'addStaff') afterWizardRender();
+  if (d.action) setTimeout(() => A[d.action]?.(d.data || {}), 380);
+});
+</script>
+</body>
+</html>

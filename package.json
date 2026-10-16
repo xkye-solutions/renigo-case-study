@@ -1,0 +1,9 @@
+{
+  "name": "@xkye/renigo-case-study",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node -e \"const fs=require('node:fs');fs.rmSync('dist',{recursive:true,force:true});fs.cpSync('public','dist',{recursive:true})\"",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\""
+  }
+}
