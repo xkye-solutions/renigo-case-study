@@ -1,0 +1,234 @@
+---
+// PROTOTYPE: Renigo on the case-study kit. Narrative chapters are markup; key flows come from src/content/flows.
+import CaseStudy from '@xkye/case-study-kit/CaseStudy.astro';
+import Story from '@xkye/case-study-kit/Story.astro';
+import Chapter from '@xkye/case-study-kit/Chapter.astro';
+import FlowChapter from '@xkye/case-study-kit/FlowChapter.astro';
+import PrototypeFrame from '@xkye/case-study-kit/PrototypeFrame.astro';
+import XkyeCredit from '@xkye/case-study-kit/XkyeCredit.astro';
+import { getCollection } from 'astro:content';
+import '../styles/renigo.css';
+const flows = (await getCollection('flows')).sort((a, b) => a.data.order - b.data.order);
+---
+<CaseStudy
+  title="Renigo Case Study"
+  description="Renigo — a resident app for gated villages. A case study by Xkye Solutions with a live interactive prototype."
+  site="https://renigo.xkye.app/"
+  ogTitle="Renigo Case Study · Xkye Solutions"
+  ogDescription="A resident app for gated communities, with a live interactive prototype."
+  ogImage="assets/brand/social-card-1200x630.png"
+>
+<Fragment slot="head">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</Fragment>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a href="#top" class="brand" aria-label="Renigo, back to top"><img src="assets/brand/renigo-horizontal-full-color.svg" alt="Renigo" /></a>
+    <nav class="nav-links">
+      <a href="#problem">Problem</a>
+      <a href="#people">People</a>
+      <a href="#flows">Key flows</a>
+      <a href="#system">Design system</a>
+      <a href="#outcomes">Outcomes</a>
+    </nav>
+    <a class="nav-cta" href="prototype.html" target="_blank" rel="noopener"><i class="ti ti-device-mobile"></i><span>Open prototype</span></a>
+  </div>
+</header>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow"><i class="ti ti-building-community"></i> Xkye Solutions · Case study · Residential community app</div>
+    <h1>Village life, <em>without</em> the logbook.</h1>
+    <p class="lede">Renigo brings visitor passes, facility bookings, worker logs, service requests and village news into one calm app for residents of gated communities, on the web and on their phones.</p>
+    <dl class="meta">
+      <div><dt>Studio</dt><dd>Xkye Solutions</dd></div>
+      <div><dt>Platform</dt><dd>Web &amp; mobile</dd></div>
+      <div><dt>Scope</dt><dd>Product design &amp; development</dd></div>
+    </dl>
+  </div>
+</header>
+
+<Story prototype="prototype.html" messageType="renigo:goto" title="Renigo interactive prototype">
+    <Chapter id="context" num="01 — Context" goto={{"tab":"home"}}>
+      <h2>Living in a village means talking to a lot of people.</h2>
+      <p class="big">In many gated communities, the everyday admin of home life runs through people and paper: a call to the guardhouse to let a guest in, a trip to the admin office to reserve the pool, a group chat where the water-interruption notice gets buried under memes.</p>
+      <p>Each task is small. Together they add up to friction for residents, guesswork for guards, and spreadsheets for the homeowners' association.</p>
+      <PrototypeFrame src="prototype.html" title="Renigo interactive prototype" />
+    </Chapter>
+
+    <Chapter id="problem" num="02 — The problem" goto={{"tab":"home"}}>
+      <h2>Too many channels, no single source of truth.</h2>
+      <p>The same village runs on at least four disconnected channels. None of them tell a resident what's happening <em>now</em>.</p>
+      <div class="cards">
+        <div class="card"><div class="ic"><i class="ti ti-phone-call"></i></div><h3>Visitors by phone call</h3><p>Guards rely on a resident picking up to confirm a guest. Missed calls mean guests waiting at the gate.</p></div>
+        <div class="card"><div class="ic"><i class="ti ti-notebook"></i></div><h3>Bookings on paper</h3><p>Facility slots live in an office logbook, so residents can't see availability before they ask.</p></div>
+        <div class="card"><div class="ic"><i class="ti ti-tool"></i></div><h3>Workers untracked</h3><p>Gardeners and contractors come and go with no record of who is inside the village right now.</p></div>
+        <div class="card"><div class="ic"><i class="ti ti-messages"></i></div><h3>News in group chats</h3><p>Important notices compete with everything else in the chat and are hard to find later.</p></div>
+      </div>
+      <div class="hmw"><small>How might we</small>give residents one calm place to manage who comes in, what they book, and what needs fixing, without a single phone call?</div>
+    </Chapter>
+
+    <Chapter id="people" num="03 — People" goto={{"screen":"household"}}>
+      <h2>Designed for a household, not a single user.</h2>
+      <p>A unit is shared by an owner, their family and sometimes a helper. The household model shapes almost every permission in the app.</p>
+      <div class="cards" style="grid-template-columns:1fr">
+        <div class="card persona"><img src="assets/images/renigo-jm.jpg" alt="" />
+          <div><h3>John, the owner</h3><div class="role">Primary account · manages the unit</div>
+          <p>Books facilities on weekends, approves contractors, and wants to know who's at the gate while he's at work.</p>
+          <div class="quote">Needs to know his guest got in, without being called out of a meeting.</div></div></div>
+        <div class="card persona"><img src="assets/images/renigo-jp.jpg" alt="" />
+          <div><h3>Paul, a family member</h3><div class="role">Full access · lives in the unit</div>
+          <p>Invites friends over and reserves the tennis court, but shouldn't be able to remove household members or pay dues.</p></div></div>
+        <div class="card persona"><div class="init">CL</div>
+          <div><h3>Chris, a sub-account</h3><div class="role">Limited access · e.g. a helper or tenant</div>
+          <p>Can invite visitors and book facilities, but can't log workers or change who belongs to the household.</p></div></div>
+      </div>
+    </Chapter>
+
+    <Chapter id="principles" num="04 — Principles" goto={{"tab":"home"}}>
+      <h2>Four rules that guided every screen.</h2>
+      <ol class="principles">
+        <li><div><h3>One tap from Home</h3><p>Every core task sits on the home grid. Residents shouldn't hunt through menus for the thing they do every week.</p></div></li>
+        <li><div><h3>Status is always visible</h3><p>Green dots for workers inside, badges for passes and requests. You can tell what's happening at a glance.</p></div></li>
+        <li><div><h3>Forms that forgive</h3><p>Dates pre-filled to today, inline validation that clears as you type, and short forms that sit in a sheet over the screen you came from.</p></div></li>
+        <li><div><h3>Calm, not corporate</h3><p>A soft green palette and real photography make it feel like the village itself, not an admin portal.</p></div></li>
+      </ol>
+    </Chapter>
+
+    <div id="flows"></div>
+
+    {flows.map((entry) => <FlowChapter entry={entry} />)}
+</Story>
+
+<section class="band rds-band" id="system">
+  <div class="wrap">
+    <div class="band-head">
+      <div class="num">06 — Design system <span class="wip"><i class="ti ti-progress"></i> In progress</span></div>
+      <h2>A shared language, taking shape.</h2>
+      <p>Alongside the product, we're building a design system on top of the Renigo brand kit: six colours, Manrope for every word in the product, and one logo across the homeowner, administration and security apps.</p>
+      <p class="wip-note"><i class="ti ti-info-circle"></i> This is a working snapshot. Colours, type and components may still be refined before release.</p>
+    </div>
+
+    <h3 class="ds-label">Colour</h3>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#F0FCE0;box-shadow:inset 0 0 0 1px #DCE8CC"></div><div class="lbl"><b>Lime canvas</b><span>#F0FCE0</span></div></div>
+      <div class="sw"><div class="chip" style="background:#E4F0D4"></div><div class="lbl"><b>Leaf surface</b><span>#E4F0D4</span></div></div>
+      <div class="sw"><div class="chip" style="background:#D0E898"></div><div class="lbl"><b>Lime accent</b><span>#D0E898</span></div></div>
+      <div class="sw"><div class="chip" style="background:#4C6810"></div><div class="lbl"><b>Olive</b><span>#4C6810</span></div></div>
+      <div class="sw"><div class="chip" style="background:#384C00"></div><div class="lbl"><b>Deep olive</b><span>#384C00</span></div></div>
+      <div class="sw"><div class="chip" style="background:#141C0C"></div><div class="lbl"><b>Ink</b><span>#141C0C</span></div></div>
+    </div>
+
+    <h3 class="ds-label">Logo</h3>
+    <div class="logo-grid">
+      <div class="logo-tile"><img src="assets/brand/renigo-stacked-full-color.svg" alt="Renigo stacked logo" style="height:120px" /><small>Primary · stacked</small></div>
+      <div class="logo-tile"><img src="assets/brand/renigo-horizontal-full-color.svg" alt="Renigo horizontal logo" style="height:56px" /><small>Alternate · horizontal</small></div>
+      <div class="logo-tile dark"><img src="assets/brand/renigo-stacked-reverse.svg" alt="Renigo reverse logo" style="height:120px" /><small>Reverse · on deep olive</small></div>
+      <div class="logo-tile"><img src="assets/brand/renigo-icon-full-color.svg" alt="Renigo icon" style="height:72px" /><small>Icon</small></div>
+    </div>
+
+    <div class="ds-grid rds">
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Typography · Manrope</h3>
+        <div class="type-spec">
+          <div><b style="font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.25">Welcome home</b><span>Heading · 32/40 · 700</span></div>
+          <div><b style="font-size:20px;font-weight:600;line-height:1.4">Manage your home</b><span>Subheading · 20/28 · 600</span></div>
+          <div><span class="t-body" style="font-size:16px">Arriving today at 6:00 PM</span><span>Body · 16/24 · 400</span></div>
+          <div><span class="t-eyebrow" style="font-size:14px;letter-spacing:0;text-transform:none">Book a facility</span><span>Label · 14/20 · 600</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Actions</h3>
+        <div class="comp-col">
+          <span class="r-btn">Continue <i class="ti ti-arrow-right"></i></span>
+          <span class="r-btn soft"><i class="ti ti-arrow-left"></i> Back</span>
+          <div class="comp-row" style="margin:0"><span class="r-btn dark sm"><i class="ti ti-wallet"></i> Add to Wallet</span><span class="r-btn ghost sm"><i class="ti ti-share"></i> Send via App</span></div>
+        </div>
+        <h3 class="ds-label">Status</h3>
+        <div class="comp-row">
+          <span class="r-pill dot">Active</span><span class="r-pill lime">Approved</span><span class="r-pill">Confirmed</span><span class="r-pill">Pending</span><span class="r-pill caps">Required</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Progress &amp; inputs</h3>
+        <div class="r-step"><span class="r-pill dot">Step 2</span><span>Step 2 of 4 · 50%</span></div>
+        <div class="r-bar"><i style="width:50%"></i></div>
+        <label class="r-field-l">Email or Mobile Number</label>
+        <div class="r-input"><i class="ti ti-mail"></i>e.g. name@example.com</div>
+        <div class="r-seg"><span class="on"><i class="ti ti-circle-check"></i> Option A</span><span><i class="ti ti-circle"></i> Option B</span></div>
+      </div>
+
+      <div class="card">
+        <h3 class="ds-label" style="margin-top:0">Cards &amp; choices</h3>
+        <div class="r-tiles">
+          <div class="r-tile"><div class="r-ic"><i class="ti ti-qrcode"></i></div><span class="r-dot"></span><b>Visitor Passes</b><small>Invite a guest</small></div>
+          <div class="r-tile"><div class="r-ic"><i class="ti ti-swimming"></i></div><span class="r-tag">Book</span><b>Facilities</b><small>Pool &amp; courts</small></div>
+        </div>
+        <div class="r-options">
+          <div class="r-opt"><div class="r-ic"><i class="ti ti-bucket-droplet"></i></div><div><b>Option</b><small>Description</small></div></div>
+          <div class="r-opt on"><div class="r-ic"><i class="ti ti-shield"></i></div><div><b>Selected</b><small>Description</small></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="band" id="outcomes">
+  <div class="wrap">
+    <div class="band-head">
+      <div class="num">07 — Outcomes</div>
+      <h2>What success looks like.</h2>
+      <p>These are the targets the experience is designed around. We'll measure them as Renigo rolls out to more communities.</p>
+    </div>
+    <div class="metrics">
+      <div class="card metric"><div class="target">Target</div><div class="val">&lt;30s</div><div class="what">To send a visitor pass</div><p>From the home screen to a pass the guest can show at the gate.</p></div>
+      <div class="card metric"><div class="target">Target</div><div class="val">3 taps</div><div class="what">To book a facility</div><p>Pick a day, pick a slot, confirm. No trip to the admin office.</p></div>
+      <div class="card metric"><div class="target">Target</div><div class="val">0</div><div class="what">Gate calls for invited guests</div><p>Guards verify the QR pass instead of phoning the resident.</p></div>
+    </div>
+
+    <div class="band-head" style="margin:96px 0 28px">
+      <div class="num">08 — What's next</div>
+      <h2>Beyond the village.</h2>
+    </div>
+    <p style="max-width:680px">Everything in the key flows above is already live. The next step is taking Renigo beyond the single village, and making the gate smarter.</p>
+
+    <h3 class="next-group"><i class="ti ti-building-community"></i> More kinds of communities</h3>
+    <div class="next three">
+      <div class="card"><div class="ic"><i class="ti ti-building-skyscraper"></i></div><h3>Condominiums</h3><p>Towers, floors and units instead of blocks and lots, with amenities like lobbies, lifts and parking levels that work the way condo associations already run them.</p></div>
+      <div class="card"><div class="ic"><i class="ti ti-map-pins"></i></div><h3>Multi-community</h3><p>One account for residents and managers who belong to more than one community, with a quick switcher instead of separate logins.</p></div>
+      <div class="card"><div class="ic"><i class="ti ti-stack-2"></i></div><h3>Multi-tenancy</h3><p>Each homeowners' association gets its own isolated workspace, data and branding on a single shared platform, so new communities can be onboarded without new builds.</p></div>
+    </div>
+
+    <h3 class="next-group"><i class="ti ti-shield-check"></i> Smarter security</h3>
+    <div class="next">
+      <div class="card"><div class="ic"><i class="ti ti-scan"></i></div><h3>Automatic plate recognition</h3><p>Gate cameras read plate numbers and match them against registered and visitor vehicles, so residents drive through and unregistered cars are flagged to the guard.</p></div>
+      <div class="card"><div class="ic"><i class="ti ti-urgent"></i></div><h3>Real-time incident alerts</h3><p>Incidents are raised by guards and residents, or detected by cameras, and pushed instantly to the right people, from the affected household to the whole community.</p></div>
+    </div>
+
+    <div class="reflection" style="margin-top:96px">
+      <div class="num">09 — Reflection</div>
+      <blockquote style="margin-top:14px">The hardest part wasn't any single screen. It was deciding what a household is, and who in it gets to do what.</blockquote>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Renigo case study · © Xkye Solutions</span>
+    <XkyeCredit />
+    <a href="prototype.html" target="_blank" rel="noopener">Open the full-screen prototype →</a>
+  </div>
+</footer>
+
+<script>
+  // Nav state
+  const nav = document.getElementById('nav')!;
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 8), { passive: true });
+</script>
+</CaseStudy>

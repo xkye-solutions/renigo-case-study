@@ -2,8 +2,15 @@
   "name": "@xkye/renigo-case-study",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "node -e \"const fs=require('node:fs');fs.rmSync('dist',{recursive:true,force:true});fs.cpSync('public','dist',{recursive:true})\"",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "@xkye/case-study-kit": "workspace:*",
+    "astro": "7.4.0"
   }
 }
