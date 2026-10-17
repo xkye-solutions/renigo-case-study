@@ -1,5 +1,7 @@
 # Renigo — Case Study & Interactive Prototype
 
+> **Read-only Mirror.** This is maintained in Xkye Solutions' private monorepo and split here with its history. Changes made here are overwritten, so please don't open issues or pull requests. Live at <https://renigo.xkye.app>. Built on [`case-study-kit`](https://github.com/xkye-solutions/case-study-kit) and [`brand`](https://github.com/xkye-solutions/brand), which are Mirrors too.
+
 A portfolio case study by **Xkye Solutions** for Renigo, a community management platform for residential villages and estates. The page tells the product story and embeds a live, clickable prototype of the resident app that follows along as you scroll.
 
 Built with Astro on the shared case-study kit (`@xkye/case-study-kit`); see the kit's README for how the pieces fit.
