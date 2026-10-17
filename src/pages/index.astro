@@ -1,11 +1,10 @@
 ---
-// PROTOTYPE: Renigo on the case-study kit. Narrative chapters are markup; key flows come from src/content/flows.
+// Renigo on the case-study kit. Narrative chapters are markup; key flows come from src/content/flows.
 import CaseStudy from '@xkye/case-study-kit/CaseStudy.astro';
 import Story from '@xkye/case-study-kit/Story.astro';
 import Chapter from '@xkye/case-study-kit/Chapter.astro';
 import FlowChapter from '@xkye/case-study-kit/FlowChapter.astro';
 import PrototypeFrame from '@xkye/case-study-kit/PrototypeFrame.astro';
-import XkyeCredit from '@xkye/case-study-kit/XkyeCredit.astro';
 import { getCollection } from 'astro:content';
 import '../styles/renigo.css';
 const flows = (await getCollection('flows')).sort((a, b) => a.data.order - b.data.order);
@@ -218,13 +217,10 @@ const flows = (await getCollection('flows')).sort((a, b) => a.data.order - b.dat
   </div>
 </section>
 
-<footer>
-  <div class="wrap">
-    <span>Renigo case study · © Xkye Solutions</span>
-    <XkyeCredit />
-    <a href="prototype.html" target="_blank" rel="noopener">Open the full-screen prototype →</a>
-  </div>
-</footer>
+<Fragment slot="footer">
+  <span>Renigo case study · © Xkye Solutions</span>
+  <a href="prototype.html" target="_blank" rel="noopener">Open the full-screen prototype →</a>
+</Fragment>
 
 <script>
   // Nav state

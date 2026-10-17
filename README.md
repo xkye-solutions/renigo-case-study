@@ -2,35 +2,34 @@
 
 A portfolio case study by **Xkye Solutions** for Renigo, a community management platform for residential villages and estates. The page tells the product story and embeds a live, clickable prototype of the resident app that follows along as you scroll.
 
-- `index.html` — the case study
-- `prototype.html` — the interactive resident app, also usable on its own
-
-No framework or dependencies yet (an Astro port is planned): both pages are plain HTML, CSS and JavaScript.
+Built with Astro on the shared case-study kit (`@xkye/case-study-kit`); see the kit's README for how the pieces fit.
 
 ## Running locally
 
-Serve `public/` over HTTP (the case study talks to the prototype through an `<iframe>`, which browsers block on `file://`):
+From the monorepo root:
 
 ```sh
-python3 -m http.server 4173 --bind 127.0.0.1 --directory public
+pnpm install
+pnpm --filter @xkye/renigo-case-study dev
 ```
 
-Then open:
-
-- http://127.0.0.1:4173/ — case study
-- http://127.0.0.1:4173/prototype.html — prototype on its own
+Then open the URL Astro prints: `/` is the case study and `/prototype.html` is the prototype on its own. `pnpm build` writes the site to `dist/`.
 
 ## Project structure
 
 ```
 .
-├── package.json             Build: copies public/ to dist/
+├── astro.config.mjs
+├── src/
+│   ├── pages/index.astro       The case study: nav, hero, narrative chapters and end sections
+│   ├── content/flows/          One Markdown file per key-flow chapter
+│   ├── content.config.ts       The flows collection, on the kit's flowSchema
+│   └── styles/renigo.css       All page styles
 └── public/
-    ├── index.html           Case study page
-    ├── prototype.html       Interactive prototype (resident app)
+    ├── prototype.html          Interactive prototype (resident app), served as-is
     └── assets/
-        ├── brand/           Logos, favicons and social card from the Renigo brand kit
-        └── images/          Web-sized photos (facilities, people, background)
+        ├── brand/              Logos, favicons and social card from the Renigo brand kit
+        └── images/             Web-sized photos (facilities, people, background)
 ```
 
 ## Prototype
@@ -43,20 +42,20 @@ Opened on its own it starts at the login screen and shows a **Back to case study
 
 ### Driving it from the case study
 
-`index.html` sends messages to the embedded prototype as each chapter scrolls into view:
+The case study sends `renigo:goto` messages to the embedded prototype as each chapter scrolls into view, following the kit's Prototype contract:
 
 ```js
-frame.contentWindow.postMessage({
+{
   type: 'renigo:goto',
   tab: 'home',            // home | facilities | passes | requests | profile
   screen: 'facilities',   // optional screen pushed on top of the tab
   sub: { sr: 'new' },     // optional sub-tab state
   action: 'book',         // optional action to run after navigating
   data: { id: 'pool' },
-}, '*');
+}
 ```
 
-Chapters declare their target with a `data-goto` attribute, so adding a new chapter only needs markup.
+Each chapter declares its target with a `goto` prop (or `goto` frontmatter for a key flow), so adding a chapter only needs markup or a new file in `src/content/flows/`.
 
 ## Brand
 
@@ -79,9 +78,9 @@ The design system section of the case study is marked **in progress** and may ch
 
 ## Deployment
 
-This Case Study lives in the `xkye-solutions` monorepo. `pnpm build` copies `public/` to `dist/`. That built output is deployed to Cloudflare at `renigo.xkye.app` and published to the read-only `xkye-solutions/renigo-case-study` Mirror.
+This Case Study lives in the `xkye-solutions` monorepo. It's deployed to Cloudflare by the root `alchemy.run.ts`, and its source is split, with history, to the read-only `xkye-solutions/renigo-case-study` Mirror.
 
-The case study's social preview tags (`og:image`, `og:url`, canonical) use absolute `https://renigo.xkye.app/` URLs; update them if the domain changes.
+The social preview tags (`og:image`, `og:url`, canonical) are built from `site="https://renigo.xkye.app/"` in `src/pages/index.astro`; update it, and `site` in `astro.config.mjs`, if the domain changes.
 
 ## Content notes
 
